@@ -1,7 +1,7 @@
 /**
  * app.js - Logika Utama, Router, State Management, & Renderer LegalIn UMKM
  * Versi Clean Professional dengan Foto Profil Konsultan, Booking Jadwal Temu Menyeluruh,
- * dan Sistem Pembayaran Escrow Interaktif (QRIS, VA, E-Wallet, Invoice).
+ * Sistem Pembayaran Escrow Interaktif, dan Dukungan Penuh Dark Mode Kontras Tinggi.
  */
 
 // State Aplikasi Global
@@ -19,12 +19,11 @@ let activeNoteSession = null;
 let vaultSubTab = "b"; // 'b' = Brankas, 'p' = Pengingat
 let isAddingDoc = false;
 let newDocForm = { type: 0, name: "", exp: "", file: "" };
-let deleteConfirmId = null;
 
 // State Sistem Pembayaran
 let paymentState = {
   item: null,          // item yang dibayar (konsul/paket)
-  method: "qris",      // qris | bca_va | mandiri_va | bri_va | ewallet
+  method: "qris",      // qris | bca_va | mandiri_va | ewallet
   promoCode: "",
   discount: 0,
   step: "checkout",    // checkout | waiting | success
@@ -47,8 +46,11 @@ function initState() {
   // Jika belum ada data, gunakan data demo siap pakai
   if (!S || !S.user) {
     S = JSON.parse(JSON.stringify(INITIAL_DEMO_DATA));
+    S.theme = S.theme || "auto";
     saveState();
   }
+
+  applyTheme();
 }
 
 // Simpan State
@@ -60,16 +62,63 @@ function saveState() {
   }
 }
 
+// Pengelolaan Tema (Dark / Light / Auto System)
+function applyTheme() {
+  const theme = S?.theme || "auto";
+  if (theme === "dark") {
+    document.documentElement.setAttribute("data-theme", "dark");
+  } else if (theme === "light") {
+    document.documentElement.setAttribute("data-theme", "light");
+  } else {
+    document.documentElement.removeAttribute("data-theme");
+  }
+}
+
+function getThemeIcon() {
+  const t = S?.theme || "auto";
+  if (t === "dark") return "🌙";
+  if (t === "light") return "☀️";
+  return (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "🌙" : "☀️";
+}
+
+function toggleTheme() {
+  const cur = S?.theme || "auto";
+  if (cur === "auto") {
+    const isSysDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    S.theme = isSysDark ? "light" : "dark";
+  } else if (cur === "dark") {
+    S.theme = "light";
+  } else {
+    S.theme = "dark";
+  }
+  saveState();
+  applyTheme();
+  renderApp();
+  showToast(S.theme === "dark" ? "Mode Gelap aktif" : "Mode Terang aktif");
+}
+
+function setThemeExplicit(themeName) {
+  S.theme = themeName;
+  saveState();
+  applyTheme();
+  renderApp();
+  showToast(`Tema diatur ke: ${themeName === "auto" ? "Sistem Otomatis" : themeName === "dark" ? "Mode Gelap" : "Mode Terang"}`);
+}
+
 // Reset ke Data Demo
 function resetToDemo() {
+  const savedTheme = S?.theme || "auto";
   S = JSON.parse(JSON.stringify(INITIAL_DEMO_DATA));
+  S.theme = savedTheme;
   saveState();
+  applyTheme();
   renderApp();
   showToast("Data demo berhasil dimuat ulang!");
 }
 
 // Reset ke Data Kosong (Pengguna Baru)
 function resetToBlank() {
+  const savedTheme = S?.theme || "auto";
   S = {
     user: null,
     biz: null,
@@ -84,9 +133,11 @@ function resetToBlank() {
     mc: {},
     hl: {},
     apiKey: "",
-    cons: false
+    cons: false,
+    theme: savedTheme
   };
   saveState();
+  applyTheme();
   currentTab = "home";
   renderApp();
   showToast("Aplikasi di-reset ke kondisi awal!");
@@ -181,7 +232,7 @@ function viewHome() {
   const progressPct = rules.length ? Math.round((completedCount / rules.length) * 100) : 0;
 
   let h = `
-    <!-- Top Header Bar Profil -->
+    <!-- Top Header Bar Profil & Tombol Mode Gelap -->
     <div class="row sp" style="margin-bottom: 12px; padding: 4px 0">
       <div class="row" style="gap: 12px">
         <div class="avatar-wrap">
@@ -193,9 +244,14 @@ function viewHome() {
           <p class="mute" style="font-size: 12px">${esc(user.owner)} · ${esc(user.city || "Indonesia")}</p>
         </div>
       </div>
-      <button class="btn sm sec" data-go="prof" aria-label="Buka Pengaturan Profil" style="border-radius: var(--radius-full); padding: 8px 12px; font-size: 12px">
-        Pengaturan
-      </button>
+      <div class="row" style="gap: 6px">
+        <button id="theme-toggle" class="btn sm sec" aria-label="Ganti Tema Gelap / Terang" title="Ganti Mode Gelap / Terang" style="border-radius: var(--radius-full); width: 38px; height: 38px; padding: 0" data-action="toggle-theme">
+          ${getThemeIcon()}
+        </button>
+        <button class="btn sm sec" data-go="prof" aria-label="Buka Pengaturan Profil" style="border-radius: var(--radius-full); padding: 8px 12px; font-size: 12px">
+          Pengaturan
+        </button>
+      </div>
     </div>
 
     <!-- Hero Banner Cek Izin -->
@@ -222,7 +278,7 @@ function viewHome() {
           🤖
         </div>
         <div>
-          <h3 style="font-size: 14.5px; color: var(--pri-dark)">Tanya Asisten AI Legal & Bisnis</h3>
+          <h3 style="font-size: 14.5px; color: var(--pri)">Tanya Asisten AI Legal &amp; Bisnis</h3>
           <p class="mute" style="font-size: 12px">Konsultasi instan syarat NIB, Halal, HPP, atau pajak 24 jam</p>
         </div>
       </div>
@@ -299,8 +355,8 @@ function viewHome() {
       </button>
     </div>
 
-    <!-- Nilai Tambah Kepercayaan -->
-    <h2>Garansi & Keamanan Platform</h2>
+    <!-- Garansi Kepercayaan -->
+    <h2>Garansi &amp; Keamanan Platform</h2>
     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px">
       <div class="card" style="padding: 12px 6px; text-align: center; margin: 0">
         <span style="font-size: 20px; display: block; margin-bottom: 4px">⚖️</span>
@@ -586,7 +642,7 @@ function viewPayment() {
   const item = paymentState.item;
   if (!item) return viewKonsultan();
 
-  const fee = 2500; // Biaya platform & escrow proteksi
+  const fee = 2500;
   const subtotal = item.price;
   const discount = paymentState.discount || 0;
   const total = Math.max(0, subtotal + fee - discount);
@@ -675,9 +731,9 @@ function viewPayment() {
     if (paymentState.method === "qris") {
       instructions = `
         <div class="qris-box">
-          <p style="font-size: 12px; font-weight: 800; letter-spacing: 0.05em; color: var(--mute); margin-bottom: 6px">QRIS STANDAR PEMBAYARAN NASIONAL</p>
+          <p style="font-size: 12px; font-weight: 800; letter-spacing: 0.05em; color: #475569; margin-bottom: 6px">QRIS STANDAR PEMBAYARAN NASIONAL</p>
           ${generateQrisSvg()}
-          <p style="font-size: 11.5px; color: var(--mute); margin-top: 8px">NMID: ID1024398129023 · LegalIn Platform</p>
+          <p style="font-size: 11.5px; color: #64748B; margin-top: 8px">NMID: ID1024398129023 · LegalIn Platform</p>
         </div>
         <p class="mute" style="text-align: center; font-size: 13px">Buka aplikasi mobile banking atau e-wallet apa saja (BCA, Mandiri, GoPay, OVO, DANA) lalu scan kode di atas.</p>
       `;
@@ -735,9 +791,9 @@ function viewPayment() {
         <p class="mute">Transaksi Anda telah diverifikasi dan dana tersimpan aman di Rekening Escrow.</p>
       </div>
 
-      <!-- Kartu Invoice Resmi -->
-      <div class="card" style="background: #FFFFFF; border: 1.5px solid var(--line); padding: 18px">
-        <div class="row sp" style="border-bottom: 1.5px solid var(--line); padding-bottom: 10px; margin-bottom: 12px">
+      <!-- Kartu Invoice Resmi Beradaptasi Dark Mode -->
+      <div class="invoice-card">
+        <div class="row sp" style="border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 12px">
           <div>
             <b style="font-size: 15px; color: var(--pri)">LegalIn UMKM</b>
             <p class="mute" style="font-size: 11px">Bukti Tanda Terima Pembayaran</p>
@@ -873,8 +929,8 @@ function viewKontrak() {
   if (generatedContractText) {
     h += `
       <h2>Pratinjau Draf Perjanjian Resmi</h2>
-      <div class="card" style="background: #FFFDF9; border: 1.5px solid var(--line)">
-        <pre style="white-space: pre-wrap; font-family: monospace; font-size: 12.5px; line-height: 1.6; margin: 0; color: #222">${esc(generatedContractText)}</pre>
+      <div class="doc-preview-sheet">
+        <pre>${esc(generatedContractText)}</pre>
       </div>
       <div class="row">
         <button class="btn" onclick="window.print()">
@@ -917,7 +973,7 @@ function viewConsultantRoom() {
         <img class="avatar-img" src="${session.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&h=200&q=80"}" alt="${esc(session.who)}">
         <div>
           <h3>${esc(session.title)}</h3>
-          <p class="mute">${formatDate(session.d)} · Slot: ${esc(session.slot || "09.00")} WIB · <b>${esc(session.fmt || "Chat")}</b></p>
+          <p class="mute">${formatDate(session.d)} · Slot ${esc(session.slot || "09.00")} WIB · <b>${esc(session.fmt || "Chat")}</b></p>
         </div>
       </div>
       ${!isCompleted ? `<button class="btn sm sec" data-action="end-session">Selesaikan Sesi</button>` : ""}
@@ -1067,7 +1123,7 @@ function viewDokumen() {
       </div>
 
       <h2>Simulasi Bot WhatsApp Pengingat</h2>
-      <div class="card" style="background: #F0FDF4; border: 1px solid #BBF7D0">
+      <div class="wa-container">
         <div class="row" style="margin-bottom: 8px">
           <span style="font-size: 20px">💬</span>
           <div>
@@ -1075,12 +1131,12 @@ function viewDokumen() {
             <p class="mute" style="font-size: 11.5px">Nomor tujuan: ${esc(S.user ? S.user.phone : "0812-3456-7890")}</p>
           </div>
         </div>
-        <div class="card" style="background: #FFFFFF; padding: 12px 14px; margin: 0">
+        <div class="wa-bubble">
           <p style="font-size: 13px; line-height: 1.45; margin: 0">
             "Halo <b>${esc(S.user ? S.user.biz : "Pelaku UMKM")}</b>! P-IRT usahamu akan habis dalam <b>${daysDiff("2026-11-20")} hari</b>. Segera ajukan perpanjangan ke Dinas Kesehatan atau minta pendampingan konsultan di LegalIn."
           </p>
         </div>
-        <button class="btn sm" data-action="simulate-wa-reply" style="margin-top: 10px">Kirim Notifikasi Uji</button>
+        <button class="btn sm" data-action="simulate-wa-reply" style="margin-top: 4px">Kirim Notifikasi Uji</button>
       </div>
     `;
   }
@@ -1093,6 +1149,7 @@ function viewDokumen() {
    ========================================================================== */
 function viewProfil() {
   const u = S.user || {};
+  const currentTheme = S?.theme || "auto";
 
   return `
     <button class="back" data-go="home">← Beranda</button>
@@ -1121,6 +1178,23 @@ function viewProfil() {
       <input id="p-city" class="inp" type="text" value="${esc(u.city || "Solo")}" data-action="p-city-inp">
 
       <button class="btn" data-action="save-profile" style="margin-top: 8px">Simpan Perubahan</button>
+    </div>
+
+    <!-- Pilihan Tema Tampilan -->
+    <h2>Pilihan Tema Tampilan</h2>
+    <div class="card">
+      <p class="mute" style="margin-bottom: 10px">Pilih tampilan antarmuka yang nyaman bagi matamu:</p>
+      <div class="grid" style="grid-template-columns: repeat(3, 1fr); gap: 8px">
+        <button class="chip ${currentTheme === "light" ? "on" : ""}" data-set-theme="light" style="text-align: center; border-radius: var(--radius-md)">
+          ☀️ Terang
+        </button>
+        <button class="chip ${currentTheme === "dark" ? "on" : ""}" data-set-theme="dark" style="text-align: center; border-radius: var(--radius-md)">
+          🌙 Gelap
+        </button>
+        <button class="chip ${currentTheme === "auto" ? "on" : ""}" data-set-theme="auto" style="text-align: center; border-radius: var(--radius-md)">
+          💻 Sistem
+        </button>
+      </div>
     </div>
 
     <h2>Koneksi Gemini AI API (Opsional)</h2>
@@ -1163,8 +1237,8 @@ function viewNotes() {
       </button>
     </div>
 
-    <div class="card" style="background: #FFFFFF; border: 1.5px solid var(--line); padding: 22px">
-      <pre style="white-space: pre-wrap; font-family: monospace; font-size: 13px; line-height: 1.6; color: #111; margin: 0">${esc(notesText)}</pre>
+    <div class="doc-preview-sheet">
+      <pre>${esc(notesText)}</pre>
     </div>
   `;
 }
@@ -1421,27 +1495,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Event Delegation Klik Global
   document.addEventListener("click", (e) => {
-    // 1. Navigasi Tab
+    // 1. Ganti Tema Gelap / Terang
+    if (e.target.closest("[data-action='toggle-theme']")) {
+      toggleTheme();
+      return;
+    }
+    const themeSetEl = e.target.closest("[data-set-theme]");
+    if (themeSetEl) {
+      setThemeExplicit(themeSetEl.dataset.setTheme);
+      return;
+    }
+
+    // 2. Navigasi Tab
     const goEl = e.target.closest("[data-go]");
     if (goEl) {
       navigateTo(goEl.dataset.go);
       return;
     }
 
-    // 2. Buka Modal AI
+    // 3. Buka Modal AI
     if (e.target.closest("[data-action='open-ai']")) {
       openAiModal();
       return;
     }
 
-    // 3. AI Quick Prompt Chip
+    // 4. AI Quick Prompt Chip
     const chipEl = e.target.closest("[data-ai-prompt]");
     if (chipEl) {
       handleAiSend(chipEl.dataset.aiPrompt);
       return;
     }
 
-    // 4. Eskalasi AI ke Konsultan Manusia
+    // 5. Eskalasi AI ke Konsultan Manusia
     if (e.target.closest("[data-action='escalate-ai']")) {
       const lastUserMsg = window.LegalInAI.history.filter(m => m.sender === "user").slice(-1)[0]?.text || "Perlindungan Merek & Legalitas";
       closeAiModal();
@@ -1453,7 +1538,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // 5. Cek Izin: Jawab Wizard
+    // 6. Cek Izin: Jawab Wizard
     const ansEl = e.target.closest("[data-wz-ans]");
     if (ansEl) {
       const q = LEGAL_QUESTIONS[wizardStep];
@@ -1491,7 +1576,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // 6. Pencari KBLI
+    // 7. Pencari KBLI
     const kbliCatEl = e.target.closest("[data-kbli-cat]");
     if (kbliCatEl) {
       kbliCategory = kbliCatEl.dataset.kbliCat;
@@ -1505,7 +1590,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // 7. Draf Kontrak
+    // 8. Draf Kontrak
     const pickContractEl = e.target.closest("[data-pick-contract]");
     if (pickContractEl) {
       selectedContractIndex = Number(pickContractEl.dataset.pickContract);
@@ -1537,7 +1622,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // 8. Konsultan: Pilih Tipe & Kota
+    // 9. Konsultan: Pilih Tipe & Kota
     const konsulTypeEl = e.target.closest("[data-konsul-type]");
     if (konsulTypeEl) {
       consultantType = konsulTypeEl.dataset.konsulType;
@@ -1622,7 +1707,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // 9. Sistem Pembayaran: Pilih Metode Bayar
+    // 10. Sistem Pembayaran: Pilih Metode Bayar
     const payMethodEl = e.target.closest("[data-pay-method]");
     if (payMethodEl) {
       paymentState.method = payMethodEl.dataset.payMethod;
@@ -1671,7 +1756,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const it = paymentState.item;
       if (it.kind === "konsul") {
-        // Buat sesi baru
         const newSes = {
           id: "SES-" + Date.now().toString().slice(-6),
           title: it.title,
@@ -1696,7 +1780,6 @@ document.addEventListener("DOMContentLoaded", () => {
         S.order = { id: it.id, s: 0, trx: paymentState.trxId };
       }
 
-      // Tambahkan bukti pembayaran ke Brankas
       S.docs = S.docs || [];
       S.docs.unshift({
         id: Date.now(),
@@ -1745,7 +1828,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // 10. Ruang Chat Konsultan
+    // 11. Ruang Chat Konsultan
     const roomEl = e.target.closest("[data-room]");
     if (roomEl) {
       activeConsultationIndex = Number(roomEl.dataset.room);
@@ -1799,7 +1882,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // 11. Brankas & Dokumen
+    // 12. Brankas & Dokumen
     const vaultTabEl = e.target.closest("[data-vault-tab]");
     if (vaultTabEl) {
       vaultSubTab = vaultTabEl.dataset.vaultTab;
@@ -1858,7 +1941,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // 12. Profil & Reset
+    // 13. Profil & Reset
     if (e.target.closest("[data-action='save-profile']")) {
       S.user = S.user || {};
       const b = $("#p-biz")?.value;

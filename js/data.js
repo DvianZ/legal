@@ -1,7 +1,7 @@
 /**
  * data.js - Basis Data & Konfigurasi LegalIn UMKM
- * Berisi aturan hukum, daftar konsultan, paket legalitas,
- * direktori KBLI OSS, template kontrak, dan data demo siap pakai.
+ * Berisi aturan hukum, daftar konsultan berfoto profil profesional,
+ * paket legalitas, direktori KBLI OSS, template kontrak, dan data demo siap pakai.
  */
 
 // Kunci penyimpanan localStorage
@@ -12,6 +12,7 @@ const INITIAL_DEMO_DATA = {
   user: {
     biz: "Dapur Sambal Bu Sari",
     owner: "Siti Rahmawati",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&h=240&q=80",
     phone: "0812-3456-7890",
     city: "Solo",
     type: "kuliner",
@@ -107,10 +108,12 @@ const INITIAL_DEMO_DATA = {
       id: "SES-DEMO-01",
       title: "Sesi dengan Rina Wulandari, S.H.",
       who: "Rina Wulandari, S.H.",
+      avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=240&h=240&q=80",
       topic: "Merek dan HAKI",
       d: "2026-10-28",
       slot: "11.00",
       fmt: "Chat",
+      location: "Ruang Chat Aplikasi",
       st: "akan",
       pr: 150000,
       trx: "LGI-98342100",
@@ -438,14 +441,16 @@ const KBLI_DATABASE = [
   }
 ];
 
-// Daftar Konsultan Hukum & Bisnis
+// Daftar Konsultan Hukum & Bisnis dengan Foto Profil Profesional
 const CONSULTANTS = [
   {
     id: 1,
     name: "Rina Wulandari, S.H.",
     title: "Advokat & Konsultan Regulasi Usaha",
+    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=240&h=240&q=80",
     city: "Solo",
-    spec: "Perizinan OSS, NIB, & SPP-IRT",
+    address: "Kantor Hukum Wulandari & Associates, Jl. Slamet Riyadi No. 142, Solo",
+    spec: "Perizinan OSS, NIB, & SPP-PIRT",
     rating: 4.9,
     reviewsCount: 142,
     rate: 150000,
@@ -457,7 +462,9 @@ const CONSULTANTS = [
     id: 2,
     name: "Bagas Pratama, S.H., M.Kn.",
     title: "Konsultan Hukum Korporasi & Notariat",
+    avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=240&h=240&q=80",
     city: "Solo",
+    address: "Pratama Notary & Legal Counsel, Jl. Urip Sumoharjo No. 88, Solo",
     spec: "PT Perorangan & Kontrak Kemitraan",
     rating: 4.8,
     reviewsCount: 98,
@@ -470,7 +477,9 @@ const CONSULTANTS = [
     id: 3,
     name: "Dewi Anggraini, S.H.",
     title: "Konsultan Kekayaan Intelektual Terdaftar",
+    avatar: "https://images.unsplash.com/photo-1580894732444-8ecded7900cd?auto=format&fit=crop&w=240&h=240&q=80",
     city: "Semarang",
+    address: "Rumah Merek Jateng, Jl. Pemuda No. 74, Semarang",
     spec: "Merek Dagang, Hak Cipta, & HAKI",
     rating: 4.9,
     reviewsCount: 215,
@@ -483,7 +492,9 @@ const CONSULTANTS = [
     id: 4,
     name: "Siti Aminah, S.H.",
     title: "Pendamping Proses Produk Halal & Perizinan",
+    avatar: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=240&h=240&q=80",
     city: "Yogyakarta",
+    address: "Pusat Pendamping Halal UMKM, Jl. Kaliurang KM 6, Yogyakarta",
     spec: "Halal BPJPH & Izin Dinkes",
     rating: 4.8,
     reviewsCount: 88,
@@ -496,7 +507,9 @@ const CONSULTANTS = [
     id: 5,
     name: "Andre Kusuma, S.H., LL.M.",
     title: "Advokat Kontrak Bisnis & Regulasi Farmasi",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=240&h=240&q=80",
     city: "Jakarta",
+    address: "Kusuma Law Chambers, Menara Rajawali Lt. 12, Mega Kuningan, Jakarta",
     spec: "Kontrak Maklon & Izin BPOM",
     rating: 4.9,
     reviewsCount: 167,
@@ -509,7 +522,9 @@ const CONSULTANTS = [
     id: 6,
     name: "Fajar Nugroho, M.M.",
     title: "Konsultan Strategi Bisnis & Kemitraan",
+    avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=240&h=240&q=80",
     city: "Semarang",
+    address: "Lintang Bisnis Solusindo, Jl. Pandanaran No. 102, Semarang",
     spec: "Ekspansi Cabang & Model Bisnis",
     rating: 4.8,
     reviewsCount: 120,
@@ -522,7 +537,9 @@ const CONSULTANTS = [
     id: 7,
     name: "Maya Lestari, M.M.",
     title: "Praktisi Pemasaran Digital & E-Commerce",
+    avatar: "https://images.unsplash.com/photo-1573496799652-408c2ac9fe98?auto=format&fit=crop&w=240&h=240&q=80",
     city: "Solo",
+    address: "Digital Growth Hub, Jl. Adi Sucipto No. 45, Solo",
     spec: "Optimasi Penjualan & Iklan Medsos",
     rating: 4.9,
     reviewsCount: 174,
@@ -535,7 +552,9 @@ const CONSULTANTS = [
     id: 8,
     name: "Hendra Wijaya, CFP",
     title: "Perencana Keuangan Bisnis & Analis Modal",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=240&h=240&q=80",
     city: "Jakarta",
+    address: "Wijaya Financial Advisory, Gedung Bursa Efek Tower 2, SCBD, Jakarta",
     spec: "Keuangan, HPP, & Akses Modal Bank",
     rating: 4.9,
     reviewsCount: 195,
@@ -548,7 +567,9 @@ const CONSULTANTS = [
     id: 9,
     name: "Laras Ayu, M.M.",
     title: "Konsultan Manajemen Operasional & SDM",
+    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=240&h=240&q=80",
     city: "Yogyakarta",
+    address: "Laras Consulting Center, Jl. Gejayan No. 22, Yogyakarta",
     spec: "Sistem Penggajian & Produktivitas Tim",
     rating: 4.7,
     reviewsCount: 76,

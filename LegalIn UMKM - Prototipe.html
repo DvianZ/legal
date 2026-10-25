@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LegalIn UMKM - Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F1EAD2;--card:#FBF6E4;--ink:#233A2D;--mute:#68796A;--line:#E0D8B8;--pri:#3B8560;--onpri:#fff;--acc:#B9C77A;--accbg:#EDE6BF;--ok:#2F7D55;--okbg:#D8EBD0;--tg:#5B5A1F;--g1:#7BBF98;--g2:#4A9A70;--sd:rgba(125,112,60,.30);--sl:rgba(255,255,255,.85);--sdi:rgba(125,112,60,.16);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17201A;--card:#222E25;--ink:#EFE9D2;--mute:#A8B5A2;--line:#2C3A30;--pri:#8FD1A5;--onpri:#10261A;--acc:#6E8F5A;--accbg:#34402A;--ok:#7EDDA4;--okbg:#1F3A2A;--tg:#D6D58B;--g1:#9BDCB0;--g2:#6FBF8A;--sd:rgba(0,0,0,.55);--sl:rgba(255,255,255,.06);--sdi:rgba(0,0,0,.35)}}
+:root[data-theme="dark"]{--bg:#17201A;--card:#222E25;--ink:#EFE9D2;--mute:#A8B5A2;--line:#2C3A30;--pri:#8FD1A5;--onpri:#10261A;--acc:#6E8F5A;--accbg:#34402A;--ok:#7EDDA4;--okbg:#1F3A2A;--tg:#D6D58B;--g1:#9BDCB0;--g2:#6FBF8A;--sd:rgba(0,0,0,.55);--sl:rgba(255,255,255,.06);--sdi:rgba(0,0,0,.35)}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Nunito","Trebuchet MS",system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.5}
+#app{max-width:480px;margin:0 auto;min-height:100vh;padding:18px 16px calc(104px + env(safe-area-inset-bottom,0px))}
+h1,h2,h3,p{margin:0}
+h1{font-size:26px;line-height:1.2;font-weight:800;letter-spacing:-.02em}
+h2{font-size:18px;font-weight:800;margin:24px 0 12px}
+h3{font-size:15px;font-weight:800}
+.mute{color:var(--mute);font-size:13px}
+.clay,.card,.qa,.opt,.trust div,details,.btn.sec,.chip,.seg button.on{box-shadow:8px 8px 18px var(--sd),-6px -6px 14px var(--sl),inset 3px 3px 6px var(--sl),inset -3px -3px 7px var(--sdi)}
+.card{background:var(--card);border:2px solid transparent;border-radius:26px;padding:16px;margin-bottom:14px}
+.hero{background:linear-gradient(145deg,var(--g1),var(--g2));color:var(--onpri);border-radius:32px 32px 32px 10px;padding:22px;margin-top:8px;box-shadow:10px 10px 22px var(--sd),-7px -7px 16px var(--sl),inset 4px 4px 9px rgba(255,255,255,.35),inset -5px -5px 10px rgba(0,0,0,.14)}
+.hero p{opacity:.92;margin:6px 0 14px}
+.btn{font:inherit;font-weight:800;border:0;border-radius:22px;padding:14px 18px;cursor:pointer;background:linear-gradient(145deg,var(--g1),var(--g2));color:var(--onpri);width:100%;box-shadow:7px 7px 15px var(--sd),-5px -5px 12px var(--sl),inset 3px 3px 6px rgba(255,255,255,.35),inset -4px -4px 8px rgba(0,0,0,.14);transition:transform .12s}
+.btn:active,.qa:active,.opt:active,.chip:active{transform:scale(.97)}
+.hero .btn{background:var(--card);color:var(--pri)}
+.btn.sec{background:var(--card);border:0;color:var(--pri)}
+.btn.sm{width:auto;padding:9px 16px;font-size:13px;border-radius:18px}
+button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--g2);outline-offset:3px}
+.row{display:flex;gap:10px;align-items:center}
+.sp{justify-content:space-between}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.qa{background:var(--card);border:2px solid transparent;border-radius:24px;padding:14px 6px;text-align:center;font:inherit;font-size:13px;font-weight:800;color:var(--ink);cursor:pointer}
+.qa span{display:block;margin-bottom:6px}
+.qa svg{display:block;margin:0 auto;width:30px;height:30px;padding:5px;border-radius:50%;background:var(--okbg)}
+.opt{display:block;width:100%;text-align:left;font:inherit;font-weight:700;background:var(--card);color:var(--ink);border:2px solid transparent;border-radius:22px;padding:15px;margin-bottom:12px;cursor:pointer}
+.bar{height:14px;background:var(--bg);border-radius:9px;overflow:hidden;box-shadow:inset 3px 3px 6px var(--sdi),inset -3px -3px 6px var(--sl)}
+.bar i{display:block;height:100%;border-radius:9px;background:linear-gradient(145deg,var(--g1),var(--g2));transition:width .3s}
+.chip{font:inherit;font-size:13px;font-weight:700;border:2px solid transparent;background:var(--card);color:var(--ink);border-radius:99px;padding:8px 16px;cursor:pointer;white-space:nowrap}
+.chip.on{background:linear-gradient(145deg,var(--g1),var(--g2));color:var(--onpri);box-shadow:inset 4px 4px 8px rgba(0,0,0,.2),inset -3px -3px 7px rgba(255,255,255,.25)}
+.chips{display:flex;gap:10px;overflow-x:auto;padding:4px 4px 12px;margin:0 -4px 6px}
+.tag{font-size:11px;font-weight:800;border-radius:10px;padding:3px 10px;background:var(--accbg);color:var(--tg);box-shadow:inset 2px 2px 4px var(--sl),inset -2px -2px 4px var(--sdi)}
+.tag.ok{background:var(--okbg);color:var(--ok)}
+.tag.bad{background:#F6CACA;color:#8A1111}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tag.bad{background:#4A2222;color:#FFABA3}}
+:root[data-theme="dark"] .tag.bad{background:#4A2222;color:#FFABA3}
+.chk{display:flex;gap:12px;align-items:flex-start;cursor:pointer}
+.box{flex:none;width:26px;height:26px;border-radius:10px;background:var(--bg);box-shadow:inset 3px 3px 6px var(--sdi),inset -3px -3px 6px var(--sl);display:grid;place-items:center;font-size:14px;font-weight:800;color:#fff;margin-top:1px}
+.done .box{background:linear-gradient(145deg,var(--g1),var(--g2));color:var(--onpri)}
+.done h3{text-decoration:line-through;color:var(--mute)}
+.det{margin:8px 0 0;font-size:13px;color:var(--mute)}
+.ring{width:88px;height:88px;border-radius:50%;display:grid;place-items:center;flex:none;box-shadow:6px 6px 13px var(--sd),-5px -5px 11px var(--sl)}
+.ring b{width:66px;height:66px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-size:18px;font-weight:800;box-shadow:inset 4px 4px 8px var(--sdi),inset -4px -4px 8px var(--sl)}
+.step{display:flex;gap:12px;padding:8px 0}
+.dot{flex:none;width:24px;height:24px;border-radius:50%;background:var(--bg);box-shadow:inset 2px 2px 4px var(--sdi),inset -2px -2px 4px var(--sl);display:grid;place-items:center;font-size:12px;color:var(--onpri);font-weight:800}
+.step.d .dot{background:linear-gradient(145deg,var(--g1),var(--g2))}
+.step.c .dot{background:var(--accbg)}
+.price{font-weight:800;color:var(--pri);font-size:17px}
+.av{flex:none;width:46px;height:46px;border-radius:50%;background:var(--accbg);display:grid;place-items:center;font-weight:800;color:var(--tg)}
+nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));max-width:456px;margin:0 auto;background:var(--card);border-radius:30px;padding:6px;z-index:5;box-shadow:8px 8px 18px var(--sd),-6px -6px 14px var(--sl),inset 3px 3px 6px var(--sl),inset -3px -3px 7px var(--sdi)}
+nav div{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+nav button{font:inherit;font-size:11px;font-weight:800;background:none;border:0;color:var(--mute);padding:8px 2px;cursor:pointer;border-radius:24px}
+nav button span{display:block}
+nav button svg{display:block;margin:0 auto 2px;width:22px;height:22px;color:var(--mute)}
+nav button.on{color:var(--onpri);background:linear-gradient(145deg,var(--g1),var(--g2));box-shadow:inset 3px 3px 6px rgba(255,255,255,.35),inset -3px -3px 6px rgba(0,0,0,.14),4px 4px 9px var(--sd)}
+nav button.on svg{color:var(--onpri)}
+#toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:20px;font-size:13px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9;max-width:90%;text-align:center;box-shadow:8px 8px 18px var(--sd)}
+#toast.s{opacity:1}
+.note{font-size:12px;color:var(--mute);margin-top:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+svg{color:var(--pri)}
+.hero{position:relative;overflow:hidden}.hero h3,.hero p{max-width:66%}.art{position:absolute;right:8px;top:12px;width:104px}
+.ban{display:block;width:100%;height:70px}.pk{padding:0;overflow:hidden}.pb{padding:16px}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--bg);border-radius:20px;padding:5px;margin:14px 0;box-shadow:inset 4px 4px 8px var(--sdi),inset -4px -4px 8px var(--sl)}
+.seg button{font:inherit;font-weight:800;font-size:13px;border:0;background:none;color:var(--mute);padding:10px;border-radius:16px;cursor:pointer}
+.seg button.on{background:var(--card);color:var(--pri)}
+.trust{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.trust div{background:var(--card);border-radius:22px;padding:12px 6px;text-align:center;font-size:11.5px;font-weight:800;line-height:1.3}
+.trust svg{display:block;margin:0 auto 4px}
+.meth{display:flex;gap:12px;align-items:center}
+.rad{flex:none;width:22px;height:22px;border-radius:50%;background:var(--bg);box-shadow:inset 3px 3px 6px var(--sdi),inset -3px -3px 6px var(--sl)}
+.opt.sel{border-color:var(--g2);background:var(--okbg)}.opt.sel .rad{background:radial-gradient(var(--g2) 45%,var(--bg) 50%)}
+.rc{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:2px dashed var(--line);font-size:13px}
+.rc:last-child{border:0}.rc b{text-align:right}
+.big{font-size:30px;font-weight:800;letter-spacing:-.02em}
+.spin{width:52px;height:52px;border-radius:50%;border:7px solid var(--line);border-top-color:var(--g2);animation:sp 1s linear infinite;margin:40px auto 14px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ctr{text-align:center}.back{font:inherit;font-weight:800;background:none;border:0;color:var(--pri);padding:4px 0 12px;cursor:pointer}
+.va{font-size:22px;font-weight:800;letter-spacing:.04em;margin:8px 0}
+.hs{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:6px 16px 20px}.hs .card{flex:none;width:236px;scroll-snap-align:start;margin:0}
+.pk .ban{height:96px}.ban.lg{height:150px;border-radius:26px}
+details{background:var(--card);border-radius:22px;padding:0 16px;margin-bottom:12px}summary{font-weight:800;padding:14px 0;cursor:pointer}details p{margin:0 0 14px;color:var(--mute);font-size:13.5px}
+.inp{display:block;width:100%;font:inherit;padding:13px 14px;border:0;border-radius:18px;background:var(--bg);color:var(--ink);margin:6px 0 12px;box-shadow:inset 4px 4px 9px var(--sdi),inset -4px -4px 9px var(--sl);outline:none}
+.inp:focus{box-shadow:inset 4px 4px 9px var(--sdi),inset -4px -4px 9px var(--sl),0 0 0 3px var(--okbg)}
+.lb{display:block;font-size:13px;font-weight:800;margin-top:8px}
+.dt{flex:none;width:52px;border-radius:18px;background:var(--okbg);text-align:center;padding:7px 0;font-weight:800;font-size:18px;line-height:1.15;box-shadow:inset 3px 3px 6px var(--sdi),inset -3px -3px 6px var(--sl)}.dt small{display:block;font-size:11px;color:var(--mute);font-weight:700}
+.mg{max-width:84%;padding:11px 15px;border-radius:22px 22px 22px 8px;margin:10px 0;background:var(--card);line-height:1.45;font-size:14px;box-shadow:6px 6px 13px var(--sd),-5px -5px 11px var(--sl),inset 2px 2px 4px var(--sl),inset -2px -2px 5px var(--sdi)}.mg.u{margin-left:auto;border-radius:22px 22px 8px 22px;background:linear-gradient(145deg,var(--g1),var(--g2));color:var(--onpri);font-weight:700}
+textarea.inp{min-height:80px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<nav><div id="nav"></div></nav>
+<div id="toast" role="status"></div>
+<script>
+var KEY="legalin_v1",S={biz:null,done:{},order:null,sessions:[],docs:[],rem:[],lead:30,ch:["app"]},tab="home",wz={i:0,a:{}},city="Semua",P=null,BK=null,ktype="h",rf="x",AID=null,PID=null,dtab="b",adding=false,DF={type:0,name:"",exp:"",file:""},RM={t:"",d:""},DEL=null,jt="a",RS=null,RD={d:0,s:0},CN=null;
+try{var raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw))}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function $(s){return document.querySelector(s)}
+function toast(t){var el=$("#toast");el.textContent=t;el.className="s";clearTimeout(toast.t);toast.t=setTimeout(function(){el.className=""},2200)}
+function rp(n){return "Rp"+n.toLocaleString("id-ID")}
+
+var Q=[
+{k:"type",q:"Usaha kamu bergerak di bidang apa?",o:[["kuliner","Makanan dan minuman"],["kosmetik","Skincare atau kosmetik"],["fashion","Fashion atau toko online"],["jasa","Jasa (salon, klinik, dll)"],["dist","Distributor atau reseller"]]},
+{k:"staff",q:"Apakah kamu sudah punya karyawan?",o:[["y","Ya, sudah punya"],["n","Belum, masih sendiri"]]},
+{k:"online",q:"Apakah kamu berjualan online?",o:[["y","Ya, lewat marketplace atau medsos"],["n","Tidak, hanya offline"]]},
+{k:"partner",q:"Apakah kamu menjalin atau akan membuka kemitraan?",o:[["y","Ya, kerja sama atau waralaba"],["n","Tidak"]]}];
+
+function rules(b){
+ var r=[
+ {id:"nib",n:"NIB (Nomor Induk Berusaha)",w:1,d:"Daftar lewat OSS. Siapkan KTP, NPWP, dan kode KBLI usahamu."},
+ {id:"npwp",n:"NPWP usaha",w:1,d:"Untuk pelaporan pajak. Siapkan KTP dan alamat usaha."}];
+ if(b.type=="kuliner")r.push({id:"pirt",n:"SPP-IRT (P-IRT) dari Dinkes",w:1,d:"Untuk makanan olahan rumahan. Ikut penyuluhan keamanan pangan di Dinkes kabupaten atau kota."},{id:"halal",n:"Sertifikat halal (BPJPH)",w:1,d:"Produk makanan dan minuman wajib bersertifikat halal. Siapkan daftar bahan dan alur produksi."});
+ if(b.type=="kosmetik")r.push({id:"bpom",n:"Notifikasi kosmetik BPOM",w:1,d:"Wajib sebelum produk dijual. Siapkan formula, hasil uji, dan kontrak maklon."},{id:"halal",n:"Sertifikat halal (BPJPH)",w:1,d:"Siapkan daftar bahan dan sertifikat dari pabrik maklon."},{id:"maklon",n:"Kontrak maklon",w:1,d:"Atur kualitas, hak formula, dan tanggung jawab antara kamu dan pabrik."});
+ if(b.type=="fashion"||b.type=="kosmetik"||b.type=="kuliner")r.push({id:"merek",n:"Pendaftaran merek (DJKI)",w:0,d:"Lindungi nama usahamu dari ditiru. Siapkan logo, nama merek, dan kelas barang."});
+ if(b.type=="jasa")r.push({id:"tempat",n:"Kesesuaian lokasi usaha (KKPR)",w:1,d:"Pastikan lokasi usaha sesuai tata ruang daerah. Cek ke dinas setempat."});
+ if(b.type=="dist")r.push({id:"dist",n:"Perjanjian distribusi dan reseller",w:1,d:"Atur harga, wilayah, target, dan sanksi dengan mitramu."});
+ if(b.staff=="y")r.push({id:"kerja",n:"Kontrak kerja karyawan",w:1,d:"Tertulis, jelas soal gaji, jam kerja, dan masa kontrak."},{id:"bpjs",n:"BPJS Ketenagakerjaan dan Kesehatan",w:1,d:"Daftarkan karyawanmu sebagai peserta."});
+ if(b.online=="y")r.push({id:"tnc",n:"Syarat penjualan dan kebijakan privasi",w:0,d:"Melindungi kamu dan pembeli saat ada komplain atau data pelanggan."});
+ if(b.partner=="y")r.push({id:"mitra",n:"Perjanjian kemitraan",w:1,d:"Atur bagi hasil, hak merek, dan cara keluar dari kerja sama."},{id:"stpw",n:"STPW (jika waralaba)",w:0,d:"Surat Tanda Pendaftaran Waralaba dari Kemendag untuk usaha waralaba."});
+ return r}
+
+var PK=[
+{id:"dasar",e:"",n:"Paket Usaha Resmi",p:450000,t:"NIB dan NPWP usaha",m:["Dokumen dikumpulkan","NIB terbit","NPWP terbit"]},
+{id:"skin",e:"",n:"Paket Siap Maklon Skincare",p:3500000,t:"PT Perorangan, NIB, kontrak maklon, daftar merek",m:["Dokumen dikumpulkan","PT Perorangan dan NIB terbit","Kontrak maklon ditandatangani","Merek terdaftar di DJKI"]},
+{id:"fran",e:"",n:"Paket Siap Buka Franchise Kuliner",p:5500000,t:"PT, merek, kontrak kemitraan, kontrak karyawan",m:["Dokumen dikumpulkan","PT dan merek terdaftar","Kontrak kemitraan selesai","Kontrak karyawan selesai"]},
+{id:"sub",e:"",n:"Legal Berlangganan",p:250000,t:"Per bulan: tinjau kontrak, pelaporan, konsultasi",m:["Aktivasi paket","Tinjau kontrak bulan ini","Laporan bulanan"]},
+{id:"kul",e:"",n:"Paket Usaha Kuliner Rumahan",p:1250000,t:"NIB, SPP-IRT, dan sertifikat halal",m:["Dokumen dikumpulkan","NIB terbit","SPP-IRT terbit","Sertifikat halal diajukan"]},
+{id:"onl",e:"",n:"Paket Usaha Siap Jualan Online",p:1750000,t:"NIB, daftar merek, syarat penjualan dan privasi",m:["Dokumen dikumpulkan","NIB terbit","Merek diajukan ke DJKI","Syarat dan privasi selesai"]},
+{id:"kon",e:"",n:"Paket Konsultasi Bisnis 3 Sesi",p:450000,t:"3 sesi: pemetaan usaha, keuangan, rencana tumbuh",m:["Sesi 1: pemetaan usaha","Sesi 2: keuangan dan harga jual","Sesi 3: rencana tumbuh"]}];
+
+var KS=[
+{n:"Rina Wulandari, S.H.",c:"Solo",s:"Perizinan dan NIB",r:4.9,t:150000,k:"h"},
+{n:"Bagas Pratama, S.H., M.Kn.",c:"Solo",s:"PT dan kontrak kemitraan",r:4.8,t:250000,k:"h"},
+{n:"Dewi Anggraini, S.H.",c:"Semarang",s:"Merek dan HAKI",r:4.9,t:200000,k:"h"},
+{n:"Siti Aminah, S.H.",c:"Yogyakarta",s:"Halal dan P-IRT",r:4.8,t:130000,k:"h"},
+{n:"Andre Kusuma, S.H., LL.M.",c:"Jakarta",s:"Kontrak maklon dan BPOM",r:4.9,t:350000,k:"h"},
+{n:"Fajar Nugroho, M.M.",c:"Semarang",s:"Strategi usaha kuliner dan ekspansi",r:4.8,t:180000,k:"b"},
+{n:"Maya Lestari, M.M.",c:"Solo",s:"Pemasaran digital UMKM",r:4.9,t:140000,k:"b"},
+{n:"Hendra Wijaya, CFP",c:"Jakarta",s:"Keuangan dan harga jual",r:4.9,t:300000,k:"b"},
+{n:"Laras Ayu, M.M.",c:"Yogyakarta",s:"Operasional dan SDM",r:4.7,t:130000,k:"b"}];
+var TP={h:["NIB dan izin usaha","Merek dan HAKI","Kontrak dan kemitraan","Masalah hukum"],b:["Pemasaran dan penjualan","Keuangan dan harga jual","Operasional dan SDM","Ekspansi dan kemitraan"]};
+var MT=[["qris","QRIS (semua e-wallet dan m-banking)"],["bca","Virtual Account BCA"],["mdr","Virtual Account Mandiri"],["ewl","GoPay, OVO, atau DANA"]];
+
+function prog(){if(!S.biz)return null;var l=rules(S.biz),d=l.filter(function(x){return S.done[x.id]}).length;return{l:l,d:d,t:l.length,pct:Math.round(d/l.length*100)}}
+
+function vHome(){
+ var p=prog(),h='<p class="mute">Halo, '+(S.user?esc(S.user.biz):"pelaku UMKM")+'</p><h1>Urus izin usaha tanpa pusing</h1>';
+ h+='<div class="hero">'+ART.hero+'<h3>Cek legalitas gratis, 1 menit</h3><p>Jawab 4 pertanyaan. Kami tunjukkan izin apa saja yang wajib kamu punya.</p><button class="btn" data-go="cek">'+(p?"Lihat hasil cek saya":"Mulai cek legalitas")+'</button></div>';
+ h+=homeTools()+homeShop()+homeReads();
+ if(p){var nx=p.l.filter(function(x){return !S.done[x.id]})[0];
+  h+='<h2>Kesiapan usahamu</h2><div class="card row"><div class="ring" style="background:conic-gradient(var(--ok) '+p.pct+'%,var(--line) 0)"><b>'+p.pct+'%</b></div><div><h3>'+p.d+' dari '+p.t+' izin selesai</h3><p class="mute">'+(nx?"Berikutnya: "+nx.n:"Semua izin sudah beres. Mantap!")+'</p></div></div>'}
+ if(S.order){var pk=PK.filter(function(x){return x.id==S.order.id})[0];h+='<div class="card"><div class="row sp"><h3>'+pk.e+' '+pk.n+'</h3><span class="tag">'+(S.order.s>=pk.m.length?"Selesai":"Diproses")+'</span></div><p class="mute" style="margin:4px 0 8px">Tahap '+Math.min(S.order.s+1,pk.m.length)+' dari '+pk.m.length+'</p><div class="bar"><i style="width:'+S.order.s/pk.m.length*100+'%"></i></div></div>'}
+ h+=homeSes();
+ h+=homeRem();
+ h+='<h2>Mau ngapain hari ini?</h2><div class="grid"><button class="qa" data-go="cek"><span>'+ico("M5 13l4 4L19 7")+'</span>Cek izin</button><button class="qa" data-go="paket"><span>'+ico("M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10")+'</span>Paket urus izin</button><button class="qa" data-go="konsul"><span>'+ico("M4 5h16v11H9l-5 4z")+'</span>Tanya ahli</button></div>';
+ h+=trust();h+='<h2>Kenapa LegalIn?</h2><div class="card"><h3>Dana aman sampai tahap selesai</h3><p class="mute">Pembayaran ditahan platform dan baru cair ke konsultan setelah tiap tahap dokumen resmi selesai.</p></div><div class="card"><h3>Konsultan di kotamu</h3><p class="mute">Izin daerah seperti P-IRT dan KKPR lebih cepat diurus orang lokal.</p></div>';
+ return h}
+
+function vCek(){
+ if(!S.biz){var q=Q[wz.i];
+  var h='<div class="bar" style="margin:8px 0 18px"><i style="width:'+wz.i/Q.length*100+'%"></i></div><p class="mute">Pertanyaan '+(wz.i+1)+' dari '+Q.length+'</p><h1 style="margin:4px 0 16px">'+q.q+'</h1>';
+  q.o.forEach(function(o){h+='<button class="opt" data-a="'+o[0]+'">'+o[1]+'</button>'});
+  if(wz.i>0)h+='<button class="btn sec" data-back="1">Kembali</button>';
+  return h}
+ var p=prog(),h='<h1>Izin yang kamu butuhkan</h1><p class="mute" style="margin:4px 0 14px">Ketuk izin untuk tandai selesai dan lihat dokumen yang disiapkan.</p>';
+ h+='<div class="card row"><div class="ring" style="background:conic-gradient(var(--ok) '+p.pct+'%,var(--line) 0)"><b>'+p.pct+'%</b></div><div><h3>'+p.d+' dari '+p.t+' selesai</h3><p class="mute">Yang bertanda Wajib harus diurus lebih dulu.</p></div></div>';
+ p.l.forEach(function(x){var dn=S.done[x.id];
+  h+='<div class="card chk '+(dn?"done":"")+'" data-t="'+x.id+'" tabindex="0" role="checkbox" aria-checked="'+!!dn+'"><div class="box">'+(dn?"✓":"")+'</div><div><div class="row"><h3>'+x.n+'</h3></div><span class="tag '+(x.w?"":"ok")+'">'+(x.w?"Wajib":"Disarankan")+'</span><div class="det">'+x.d+'</div></div></div>'});
+ h+='<button class="btn" data-go="paket" style="margin-top:6px">Mau diurus ahli? Lihat paket</button><button class="btn sec" data-redo="1" style="margin-top:8px">Ulangi cek</button>';
+ h+='<p class="note">Informasi ini bersifat indikatif untuk prototype. Pastikan persyaratan terbaru ke OSS, dinas terkait, atau konsultan hukum.</p>';
+ return h}
+
+var ART={hero:'<svg class="art" viewBox="0 0 120 100" aria-hidden="true"><rect x="6" y="62" width="22" height="32" rx="2" fill="#fff" opacity=".2"/><rect x="32" y="44" width="26" height="50" rx="2" fill="#fff" opacity=".3"/><rect x="62" y="58" width="20" height="36" rx="2" fill="#fff" opacity=".2"/><rect x="60" y="6" width="48" height="62" rx="5" fill="#fff"/><rect x="68" y="18" width="32" height="4" rx="2" fill="#B9C9C4"/><rect x="68" y="28" width="24" height="4" rx="2" fill="#B9C9C4"/><circle cx="84" cy="50" r="10" fill="#F2DFA0"/><path d="M79 50l3.6 3.6 6.4-7" stroke="#241a05" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'};
+function ico(d){return '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+d+'"/></svg>'}
+function trust(){return '<div class="trust"><div>'+ico("M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z")+'Ahli<br>terverifikasi</div><div>'+ico("M6 10V8a6 6 0 1112 0v2M5 10h14v11H5z")+'Data<br>terenkripsi</div><div>'+ico("M3 12h4l3-8 4 16 3-8h4")+'Dana aman<br>per tahap</div></div>'}
+function av(i,z){var c=["#F2DFA0","#3FB596","#7A9CC6","#C98B9B","#9A8CC2","#D0845B"][i%6],k=["#F1C9A5","#D9A47A","#B97F55"][i%3];return '<svg width="'+z+'" height="'+z+'" viewBox="0 0 48 48" style="flex:none" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="'+c+'" opacity=".3"/><circle cx="24" cy="19" r="8" fill="'+k+'"/><path d="M8 42c2-9 9-13 16-13s14 4 16 13a24 24 0 01-32 0z" fill="'+c+'"/><path d="M15 17c0-6 4-9 9-9s9 3 9 9c-2-3-5-4-9-4s-7 1-9 4z" fill="#2B2420"/></svg>'}
+function banBiz(){return '<svg class="ban" style="border-radius:14px" viewBox="0 0 300 70" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="300" height="70" fill="#0B4439"/><circle cx="270" cy="0" r="54" fill="#fff" opacity=".08"/><rect x="26" y="40" width="12" height="20" fill="#3FB596"/><rect x="44" y="30" width="12" height="30" fill="#3FB596"/><rect x="62" y="18" width="12" height="42" fill="#F2DFA0"/><path d="M26 36l18-10 18-12 20-4" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="106" cy="10" r="4" fill="#fff"/><text x="130" y="30" fill="#fff" font-size="15" font-weight="800" font-family="sans-serif">Konsultasi bisnis</text><text x="130" y="48" fill="#fff" opacity=".8" font-size="11" font-family="sans-serif">Tumbuh dengan arahan ahli</text></svg>'}
+function qr(){var q=7,r="";for(var y=0;y<21;y++)for(var x=0;x<21;x++){var f=(x<7&&y<7)||(x>13&&y<7)||(x<7&&y>13),on;if(f){var a=x>13?x-14:x,b=y>13?y-14:y;on=(a==0||a==6||b==0||b==6)||(a>=2&&a<=4&&b>=2&&b<=4)}else{q=(q*73+x*31+y*17)%101;on=q%3==0}if(on)r+='<rect x="'+x+'" y="'+y+'" width="1" height="1"/>'}return '<svg viewBox="-1 -1 23 23" width="190" height="190" style="background:#fff;border-radius:12px;padding:6px" fill="#111" aria-label="Kode QRIS contoh">'+r+'</svg>'}
+
+function vPaket(){
+ var h='<h1>Paket urus izin</h1><p class="mute" style="margin:4px 0 14px">Dikemas sesuai tujuan usahamu. Bayar sekali, dana cair ke konsultan per tahap selesai.</p>';
+ if(S.order){var pk=PK.filter(function(x){return x.id==S.order.id})[0],fin=S.order.s>=pk.m.length,rel=Math.round(pk.p*Math.min(S.order.s,pk.m.length)/pk.m.length);
+  h+='<div class="card" style="border-color:var(--pri)"><div class="row sp"><h3>Pesanan aktif</h3><span class="tag '+(fin?"ok":"")+'">'+(fin?"Selesai":"Diproses")+'</span></div><p class="mute">'+pk.n+'</p>';
+  pk.m.forEach(function(m,i){h+='<div class="step '+(i<S.order.s?"d":i==S.order.s?"c":"")+'"><div class="dot">'+(i<S.order.s?"✓":"")+'</div><div>'+m+'</div></div>'});
+  h+='<div class="row sp" style="margin:6px 0 10px"><span class="mute">Dana ditahan: '+rp(pk.p-rel)+'</span><span class="mute">Sudah cair: '+rp(rel)+'</span></div>';
+  h+=ordExtra(fin);h+=fin?'<button class="btn sec" data-reset="1">Tutup pesanan</button>':'<button class="btn" data-next="1">Setujui tahap ini</button>';
+  h+='</div><h2>Paket lainnya</h2>'}
+ PK.forEach(function(x){if(S.order&&S.order.id==x.id)return;h+=pkCard(x)});
+ return h+'<p class="note">Harga hanya contoh untuk prototype.</p>'}
+
+function vKonsul(){
+ var cs=["Semua","Solo","Semarang","Yogyakarta","Jakarta"],h='<h1>Tanya ahli di kotamu</h1>'+(S.sessions.length?'<button class="btn sec" data-go="jdw" style="margin-top:10px">Lihat jadwal saya ('+upSes().length+')</button>':'');
+ h+='<div class="seg"><button class="'+(ktype=="h"?"on":"")+'" data-kt="h">Konsultan hukum</button><button class="'+(ktype=="b"?"on":"")+'" data-kt="b">Konsultan bisnis</button></div>';
+ if(ktype=="b")h+=banBiz()+'<p class="mute" style="margin:8px 0 12px">Pemasaran, keuangan, operasional, dan ekspansi. Sesi 45 menit lewat chat atau video call.</p>';
+ else h+='<p class="mute" style="margin-bottom:12px">Perizinan, merek, kontrak, dan masalah hukum usaha. Sesi 45 menit lewat chat atau video call.</p>';
+ h+='<div class="chips">';cs.forEach(function(c){h+='<button class="chip '+(c==city?"on":"")+'" data-city="'+c+'">'+c+'</button>'});h+='</div>';
+ KS.forEach(function(k,i){if(k.k!=ktype||(city!="Semua"&&k.c!=city))return;
+  h+='<div class="card"><div class="row">'+av(i,48)+'<div><h3>'+k.n+'</h3><p class="mute">'+k.s+'<br>'+k.c+' · Rating '+k.r+' · Terverifikasi</p></div></div><div class="row sp" style="margin-top:10px"><div><span class="price">'+rp(k.t)+'</span><span class="mute"> / sesi</span></div><button class="btn sm" data-book="'+i+'">Pilih jadwal</button></div></div>'});
+ return h}
+
+function days(){var a=[];for(var i=1;i<=5;i++){var d=new Date();d.setDate(d.getDate()+i);a.push(d.toLocaleDateString("id-ID",{weekday:"short",day:"numeric",month:"short"}))}return a}
+function chips(arr,key,cur){var h='<div class="chips" style="flex-wrap:wrap">';arr.forEach(function(x,i){h+='<button class="chip '+(cur==i?"on":"")+'" data-'+key+'="'+i+'">'+x+'</button>'});return h+'</div>'}
+function vBook(){var k=KS[BK.i],D=days(),SL=["09.00","11.00","14.00","16.00"],FM=["Chat","Video call"];
+ var h='<button class="back" data-go="konsul">← Kembali</button><div class="card row">'+av(BK.i,48)+'<div><h3>'+k.n+'</h3><p class="mute">'+k.s+' · '+k.c+'</p></div></div>';
+ h+='<h2 style="margin-top:8px">Topik konsultasi</h2>'+chips(TP[k.k],"topic",BK.topic)+'<h2 style="margin-top:6px">Pilih tanggal</h2>'+chips(D,"day",BK.day)+'<h2 style="margin-top:6px">Pilih jam</h2>'+chips(SL,"slot",BK.slot)+'<h2 style="margin-top:6px">Bentuk sesi</h2>'+chips(FM,"fmt",BK.fmt);
+ h+='<div class="card row sp" style="margin-top:8px"><span class="mute">Tarif sesi 45 menit</span><span class="price">'+rp(k.t)+'</span></div><button class="btn" data-cobook="1">Lanjut ke pembayaran</button>';
+ return h}
+function startPay(it){P={item:it,m:null,step:"tnc",ag1:false,ag2:false};tab="pay";render()}
+function fee(p){return Math.round(p*0.01)+1000}
+
+function vPay(){var it=P.item,tot=it.price+fee(it.price),h="";
+ if(P.step=="tnc"){h=tncView(it)}else if(P.step=="co"){
+  h='<button class="back" data-bk="1">← Kembali</button><h1>Pembayaran</h1><div class="card" style="margin-top:12px"><h3>'+it.title+'</h3><p class="mute">'+it.sub+'</p><div style="margin-top:8px"><div class="rc"><span>Harga layanan</span><b>'+rp(it.price)+'</b></div><div class="rc"><span>Biaya layanan</span><b>'+rp(fee(it.price))+'</b></div><div class="rc"><span>Total</span><b class="price">'+rp(tot)+'</b></div></div></div>';
+  h+='<h2 style="margin-top:6px">Pilih metode bayar</h2>';
+  MT.forEach(function(m){h+='<button class="opt meth '+(P.m==m[0]?"sel":"")+'" data-meth="'+m[0]+'"><span class="rad"></span>'+m[1]+'</button>'});
+  h+='<p class="mute" style="margin-bottom:12px">'+(it.kind=="paket"?"Dana ditahan LegalIn dan baru dicairkan ke konsultan setiap satu tahap selesai.":"Dana diteruskan ke konsultan setelah sesi berlangsung.")+'</p><button class="btn" data-pay="1">Bayar '+rp(tot)+'</button>';
+ }else if(P.step=="wait"){
+  var mn=MT.filter(function(m){return m[0]==P.m})[0][1];
+  h='<div class="ctr"><h1>Selesaikan pembayaran</h1><p class="mute" style="margin:4px 0 16px">Bayar dalam 24 jam · '+mn+'</p><div class="big">'+rp(tot)+'</div><div style="margin:16px 0">';
+  if(P.m=="qris")h+=qr()+'<p class="mute" style="margin-top:8px">Scan dengan aplikasi bank atau e-wallet.</p>';
+  else if(P.m=="ewl")h+='<div class="card">Permintaan bayar sudah dikirim. Buka aplikasi GoPay, OVO, atau DANA lalu konfirmasi.</div>';
+  else h+='<div class="card"><p class="mute">Nomor Virtual Account</p><div class="va">'+(P.m=="bca"?"3901 0812 3456 7890":"8908 0812 3456 7890")+'</div><button class="btn sec sm" data-copy="1">Salin nomor</button></div>';
+  h+='</div><button class="btn" data-sim="1">Simulasikan pembayaran berhasil</button><p class="note">Tombol ini hanya ada di prototype. Aslinya status berubah otomatis setelah kamu membayar.</p></div>';
+ }else if(P.step=="proc"){
+  h='<div class="ctr"><div class="spin"></div><h3>Memeriksa pembayaran...</h3><p class="mute">Mohon tunggu sebentar.</p></div>';
+ }else{
+  var mn2=MT.filter(function(m){return m[0]==P.m})[0][1];
+  h='<div class="ctr" style="padding-top:20px"><svg width="96" height="96" viewBox="0 0 96 96" aria-hidden="true"><circle cx="48" cy="48" r="44" fill="var(--okbg)"/><circle cx="48" cy="48" r="32" fill="var(--ok)"/><path d="M33 49l11 11 20-22" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><h1 style="margin:12px 0 4px">Pembayaran berhasil</h1><p class="mute">Terima kasih. Bukti pembayaran sudah tersimpan.</p></div>';
+  h+='<div class="card" style="margin-top:18px"><div class="rc"><span>No. transaksi</span><b>'+P.trx+'</b></div><div class="rc"><span>Waktu</span><b>'+P.time+'</b></div><div class="rc"><span>Metode</span><b>'+mn2+'</b></div><div class="rc"><span>Layanan</span><b>'+it.title+'</b></div>'+(it.kind=="paket"?'<div class="rc"><span>Penyedia</span><b>'+TK[PX[it.id].s].n+'</b></div>':'')+'<div class="rc"><span>S&amp;K</span><b>Disetujui v1.0</b></div><div class="rc"><span>Total dibayar</span><b class="price">'+rp(tot)+'</b></div></div>';
+  h+='<div class="card" style="background:var(--okbg);border-color:var(--ok)"><h3>'+(it.kind=="paket"?"Dana kamu ditahan dengan aman":"Sesi konsultasimu terjadwal")+'</h3><p class="mute">'+(it.kind=="paket"?"Konsultan mulai mengurus dokumen. Dana dicairkan bertahap setelah kamu menyetujui tiap tahap.":it.sub+". Tautan sesi dikirim lewat chat aplikasi.")+'</p></div>';
+  h+='<button class="btn" data-go="'+(it.kind=="paket"?"paket":"jdw")+'">'+(it.kind=="paket"?"Lihat pesanan saya":"Lihat jadwal saya")+'</button><button class="btn sec" data-go="home" style="margin-top:8px">Kembali ke beranda</button>';
+ }
+ return h}
+
+var PR={dasar:[],skin:["kosmetik"],fran:["partner"],sub:["staff"],kul:["kuliner"],onl:["fashion","online"],kon:[]};
+function hit(tags){var b=S.biz;if(!b||!tags)return false;return tags.some(function(t){return b.type==t||b.staff=="y"&&t=="staff"||b.online=="y"&&t=="online"||b.partner=="y"&&t=="partner"})}
+var AR=[
+{id:1,k:"h",t:"NIB: izin pertama yang sebaiknya kamu urus",m:3,r:["kuliner","kosmetik","fashion","jasa","dist"],p:["NIB (Nomor Induk Berusaha) adalah identitas usaha yang diterbitkan lewat sistem OSS. Dengan NIB, usahamu tercatat resmi dan lebih mudah mengurus izin lain.","Siapkan KTP, NPWP, alamat usaha, dan kode KBLI yang sesuai kegiatan usahamu. KBLI yang salah bisa membuat izin lanjutan tidak cocok dengan usaha yang sebenarnya.","Mulai dari menu Cek Izin untuk tahu izin apa lagi yang perlu menyusul."]},
+{id:2,k:"h",t:"Daftar merek sebelum nama usahamu ditiru",m:4,r:["fashion","kosmetik","kuliner"],p:["Nama dan logo yang mulai dikenal bisa ditiru pihak lain. Merek yang belum didaftarkan lebih sulit dibela kalau terjadi sengketa.","Cek dulu apakah nama sudah dipakai, lalu ajukan pendaftaran ke DJKI sesuai kelas barang atau jasamu.","Proses pendaftaran butuh waktu, jadi sebaiknya dimulai sejak usahamu mulai berkembang."]},
+{id:3,k:"h",t:"Kontrak kerja untuk karyawan pertama",m:3,r:["staff"],p:["Kontrak tertulis melindungi dua pihak: kamu dan karyawanmu.","Isi minimal yang perlu ada: tugas, gaji, jam kerja, masa kontrak, dan cara mengakhiri kerja sama.","Daftarkan juga karyawan ke BPJS sesuai ketentuan yang berlaku."]},
+{id:4,k:"h",t:"Sertifikat halal: apa yang perlu disiapkan",m:4,r:["kuliner","kosmetik"],p:["Produk makanan, minuman, dan kosmetik yang beredar di Indonesia umumnya wajib bersertifikat halal.","Siapkan daftar bahan, alur produksi, dan bukti bahan yang sudah bersertifikat. Pendamping proses produk halal bisa membantu UMKM.","Cek ketentuan terbaru untuk jenis produkmu langsung ke BPJPH."]},
+{id:5,k:"b",t:"Hitung harga jual agar tidak rugi diam-diam",m:4,r:["kuliner","fashion","dist","jasa"],p:["Harga jual bukan sekadar modal bahan ditambah untung.","Hitung bahan, tenaga, kemasan, biaya platform, listrik, dan sewa. Bagi per produk, baru tambahkan margin.","Tinjau ulang harga tiap beberapa bulan, terutama saat harga bahan berubah."]},
+{id:6,k:"b",t:"Siap buka kemitraan? Cek 5 hal ini dulu",m:5,r:["partner"],p:["Kemitraan bisa mempercepat pertumbuhan, tetapi tanpa dasar yang rapi bisa memicu sengketa.","Pastikan ada lima hal: merek terdaftar, sistem operasional tertulis, hitungan bagi hasil, perjanjian tertulis, dan aturan jika salah satu pihak keluar.","Konsultasikan perjanjian ke ahli sebelum kamu menawarkan kemitraan ke orang lain."]},
+{id:7,k:"b",t:"Legalitas bikin jualan online lebih dipercaya",m:3,r:["online","fashion"],p:["Pembeli lebih tenang membeli dari usaha yang identitasnya jelas.","Tampilkan nama usaha, kontak, syarat pembelian, dan kebijakan retur. Itu juga membantu saat ada komplain."]},
+{id:8,k:"b",t:"Pisahkan uang pribadi dan uang usaha",m:3,r:["kuliner","kosmetik","fashion","jasa","dist"],p:["Mencampur keduanya membuat kamu sulit tahu usaha untung atau rugi.","Buat rekening terpisah, catat pemasukan dan pengeluaran tiap hari, dan beri dirimu gaji tetap dari usaha."]}];
+function arts(){return AR.slice().sort(function(a,b){return (hit(b.r)?1:0)-(hit(a.r)?1:0)})}
+function artCard(a){var H=a.k=="h";return '<div class="card row" data-read="'+a.id+'" tabindex="0" style="cursor:pointer"><div class="ring" style="width:46px;height:46px;border-radius:12px;background:'+(H?"var(--okbg)":"var(--accbg)")+'">'+ico(H?"M6 2h9l5 5v15H6zM14 2v6h6":"M4 20V10M10 20V4M16 20v-8M22 20H2")+'</div><div><h3>'+a.t+'</h3><p class="mute">'+(H?"Hukum":"Bisnis")+' · '+a.m+' menit baca'+(hit(a.r)?' · <b style="color:var(--pri)">Untuk usahamu</b>':"")+'</p></div></div>'}
+function homeShop(){var l=PK.slice().sort(function(a,b){return (hit(PR[b.id])?1:0)-(hit(PR[a.id])?1:0)}),h='<div class="row sp" style="margin-top:6px"><h2>Paket usaha pilihan</h2><button class="back" data-go="paket" style="margin-top:14px">Lihat semua</button></div><div class="hs">';
+ l.forEach(function(x){h+=pkCard(x)});
+ return h+'</div>'}
+function homeReads(){var h='<div class="row sp"><h2>Bacaan untuk kamu</h2><button class="back" data-go="reads" style="margin-top:14px">Lihat semua</button></div>';arts().slice(0,3).forEach(function(a){h+=artCard(a)});return h}
+function vReads(){var h='<button class="back" data-go="home">← Beranda</button><h1>Bacaan hukum dan bisnis</h1><p class="mute" style="margin:4px 0 12px">Ringkas, jelas, dan relevan dengan usahamu.</p><div class="chips">';
+ [["x","Semua"],["h","Hukum"],["b","Bisnis"]].forEach(function(c){h+='<button class="chip '+(rf==c[0]?"on":"")+'" data-rf="'+c[0]+'">'+c[1]+'</button>'});h+='</div>';
+ arts().forEach(function(a){if(rf=="x"||a.k==rf)h+=artCard(a)});return h+'<p class="note">Bacaan bersifat umum dan bukan nasihat hukum atau keuangan.</p>'}
+function vArt(){var a=AR.filter(function(x){return x.id==AID})[0],H=a.k=="h";var h='<button class="back" data-go="reads">← Semua bacaan</button><span class="tag '+(H?"ok":"")+'">'+(H?"Hukum":"Bisnis")+'</span><h1 style="margin:8px 0 4px">'+a.t+'</h1><p class="mute" style="margin-bottom:14px">'+a.m+' menit baca</p>';
+ a.p.forEach(function(t){h+='<p style="margin-bottom:12px;font-size:16px;line-height:1.65">'+t+'</p>'});
+ h+='<div class="card" style="background:var(--okbg);border-color:var(--ok);margin-top:16px"><h3>'+(H?"Butuh bantuan hukum?":"Mau arahan untuk usahamu?")+'</h3><p class="mute" style="margin:2px 0 10px">Ngobrol 45 menit dengan ahli terverifikasi di kotamu.</p><button class="btn" data-go="konsul">Pilih konsultan</button></div><button class="btn sec" data-go="paket">Lihat paket usaha</button><p class="note">Bacaan bersifat umum dan bukan nasihat hukum atau keuangan.</p>';return h}
+
+var TK=[
+{n:"Griya Legalitas Usaha",k:"Solo",sn:"Griya Legalitas",c:"#0F5B4D",resp:"Balas rata-rata 10 menit"},
+{n:"Rumah Merek Jateng",k:"Semarang",sn:"Rumah Merek",c:"#B5566F",resp:"Balas rata-rata 15 menit"},
+{n:"Lintang Konsultan Bisnis",k:"Yogyakarta",sn:"Lintang Konsultan",c:"#3B6EA5",resp:"Balas rata-rata 20 menit"},
+{n:"Kantor Hukum Nusantara Mandiri",k:"Jakarta",sn:"Nusantara Law",c:"#5B4B8A",resp:"Balas rata-rata 30 menit"},
+{n:"Dapur Legal Nusantara",k:"Solo",sn:"Dapur Legal",c:"#C77446",resp:"Balas rata-rata 12 menit"}];
+var PX={
+dasar:{s:0,r:4.8,sold:1240,dur:"3 sampai 5 hari kerja",inc:["Pendaftaran NIB lewat OSS","Penentuan kode KBLI yang tepat","Pembuatan NPWP usaha","Panduan kewajiban setelah NIB terbit"],doc:["KTP pemilik","NPWP pribadi","Alamat usaha","Deskripsi kegiatan usaha"],rv:["Rina, warung kopi di Solo","Cepat dan jelas. NIB terbit tanpa saya pusing ke mana-mana."]},
+skin:{s:3,r:4.9,sold:386,dur:"4 sampai 8 minggu sampai merek diajukan",inc:["Pendirian PT Perorangan dan NIB","Draf dan negosiasi kontrak maklon","Pengajuan merek ke DJKI","Pendampingan sampai tanda terima permohonan"],doc:["KTP dan NPWP pendiri","Nama usaha dan logo","Profil pabrik maklon","Daftar produk dan bahan"],rv:["Salsa, skincare lokal di Semarang","Kontrak maklonnya rapi, saya jadi paham hak atas formula saya."]},
+fran:{s:1,r:4.8,sold:214,dur:"5 sampai 8 minggu",inc:["Pendirian PT dan NIB","Pengajuan merek","Draf perjanjian kemitraan","Kontrak kerja karyawan"],doc:["KTP dan NPWP pendiri","Nama dan logo merek","Model bagi hasil","SOP operasional"],rv:["Bayu, kedai ayam di Solo Raya","Perjanjian kemitraannya jelas, calon mitra jadi lebih percaya."]},
+sub:{s:0,r:4.7,sold:532,dur:"Per bulan, berhenti kapan saja",inc:["Tinjauan satu kontrak per bulan","Pengingat dan bantuan pelaporan berkala","Konsultasi lewat chat","Brankas dokumen digital"],doc:["Kontrak yang ingin ditinjau","Dokumen izin yang sudah ada"],rv:["Mbak Tari, toko oleh-oleh","Murah untuk ukuran punya konsultan hukum sendiri."]},
+kul:{s:4,r:4.9,sold:842,dur:"3 sampai 6 minggu",inc:["NIB lewat OSS","Pendampingan SPP-IRT di Dinkes","Pengajuan sertifikat halal","Checklist kebersihan dan label kemasan"],doc:["KTP dan NPWP","Daftar bahan dan resep","Foto dapur produksi","Contoh kemasan"],rv:["Bu Wati, keripik pisang","Dibantu dari penyuluhan sampai berkas halal. Tinggal ikuti arahan."]},
+onl:{s:1,r:4.8,sold:468,dur:"4 sampai 6 minggu",inc:["NIB lewat OSS","Pengajuan merek ke DJKI","Syarat penjualan dan kebijakan retur","Kebijakan privasi toko online"],doc:["KTP dan NPWP","Nama dan logo toko","Tautan toko online","Daftar kategori produk"],rv:["Dinda, fashion muslim","Toko saya jadi lebih meyakinkan di mata pembeli."]},
+kon:{s:2,r:4.9,sold:975,dur:"3 sesi dalam 2 minggu",inc:["Pemetaan model bisnis","Hitung harga jual dan arus kas","Rencana pertumbuhan 90 hari","Ringkasan tertulis tiap sesi"],doc:["Gambaran usaha saat ini","Data penjualan singkat","Daftar produk dan harga"],rv:["Arif, usaha laundry","Hitungan harganya bikin saya sadar ada produk yang rugi."]}};
+function shopArt(t,cls){var c=t.c,st="";for(var i=0;i<6;i++)st+='<path d="M'+(40+i*37)+' 52h37v10a18.5 12 0 01-37 0z" fill="'+(i%2?"#fff":c)+'"/>';
+ return '<svg class="ban '+(cls||"")+'" viewBox="0 0 300 130" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Toko '+t.n+'"><rect width="300" height="130" fill="'+c+'" opacity=".16"/><circle cx="262" cy="22" r="14" fill="#F2DFA0" opacity=".85"/><rect y="112" width="300" height="18" fill="'+c+'" opacity=".35"/><rect x="40" y="30" width="222" height="22" rx="3" fill="'+c+'"/><text x="151" y="46" text-anchor="middle" fill="#fff" font-size="12.5" font-weight="800" font-family="sans-serif">'+t.sn+'</text><rect x="46" y="62" width="210" height="50" fill="#fff"/><rect x="58" y="72" width="64" height="40" rx="2" fill="'+c+'" opacity=".22"/><rect x="66" y="78" width="22" height="28" rx="2" fill="#fff"/><rect x="70" y="84" width="14" height="2.5" fill="#B9C9C4"/><rect x="70" y="90" width="10" height="2.5" fill="#B9C9C4"/><circle cx="88" cy="100" r="6" fill="#F2DFA0"/><path d="M85 100l2 2 4-4.5" stroke="#241a05" stroke-width="1.6" fill="none" stroke-linecap="round"/><rect x="132" y="74" width="46" height="22" rx="2" fill="'+c+'" opacity=".22"/><rect x="190" y="74" width="30" height="38" rx="2" fill="'+c+'"/><circle cx="214" cy="94" r="1.8" fill="#fff"/>'+st+'</svg>'}
+function ban(i,lg){return shopArt(TK[PX[PK[i].id].s],lg?"lg":"")}
+function tkAv(t){return '<div class="av" style="background:'+t.c+';color:#fff;border-radius:12px">'+t.n.split(" ").slice(0,2).map(function(w){return w.charAt(0)}).join("")+'</div>'}
+function pkCard(x){var i=PK.indexOf(x),X=PX[x.id],T=TK[X.s];return '<div class="card pk" data-pk="'+x.id+'" tabindex="0" style="cursor:pointer">'+ban(i)+'<div class="pb">'+(hit(PR[x.id])?'<span class="tag ok">Cocok untukmu</span>':'')+'<h3 style="margin-top:4px">'+x.n+'</h3><p class="mute" style="margin:2px 0 4px">'+T.n+' · '+T.k+'</p><p class="mute" style="font-size:12px">Rating '+X.r+' · '+X.sold.toLocaleString("id-ID")+' terjual</p><div class="row sp" style="margin-top:8px"><div class="price">'+rp(x.p)+'</div><span class="btn sm" style="pointer-events:none">Lihat</span></div></div></div>'}
+function vPk(){var x=PK.filter(function(p){return p.id==PID})[0],X=PX[x.id],T=TK[X.s],i=PK.indexOf(x);
+ var h='<button class="back" data-go="paket">← Kembali</button>'+ban(i,1)+'<h1 style="margin-top:14px">'+x.n+'</h1><p class="mute" style="margin:4px 0 8px">Rating '+X.r+' · '+X.sold.toLocaleString("id-ID")+' terjual · Estimasi '+X.dur+'</p><div class="price" style="font-size:24px;margin-bottom:12px">'+rp(x.p)+'</div><button class="btn" data-buy="'+x.id+'">Beli sekarang</button>';
+ h+='<div class="card row" style="margin-top:14px">'+tkAv(T)+'<div><h3>'+T.n+'</h3><p class="mute">'+T.k+' · Mitra terverifikasi<br>'+T.resp+'</p></div></div>';
+ h+='<h2>Yang kamu dapat</h2><div class="card">';X.inc.forEach(function(t){h+='<div class="rc"><span>✓ '+t+'</span></div>'});
+ h+='</div><h2>Yang perlu kamu siapkan</h2><div class="card">';X.doc.forEach(function(t){h+='<div class="rc"><span>• '+t+'</span></div>'});
+ h+='</div><h2>Tahapan pengerjaan</h2><div class="card">';x.m.forEach(function(m,k){h+='<div class="step c"><div class="dot" style="color:var(--ink)">'+(k+1)+'</div><div>'+m+'</div></div>'});
+ h+='<p class="mute" style="margin-top:6px">Dana dicairkan ke penyedia setiap satu tahap selesai dan kamu setujui.</p></div><h2>Ulasan pembeli</h2><div class="card"><h3>'+X.rv[0]+'</h3><p class="mute" style="margin:2px 0">Rating 5 dari 5</p><p>'+X.rv[1]+'</p></div>';
+ return h+'<button class="btn" data-buy="'+x.id+'" style="margin-top:6px">Beli sekarang</button><p class="note">Nama toko, statistik, dan ulasan adalah contoh untuk prototype.</p>'}
+
+var TC_P=[
+["Ruang lingkup layanan","Layanan mengikuti rincian paket yang kamu pilih. Pekerjaan di luar rincian paket hanya dikerjakan setelah ada penawaran dan persetujuan tertulis darimu."],
+["Kewajiban kamu sebagai pembeli","Kamu menyerahkan data dan dokumen yang benar, asli, dan sah, seperti KTP, NPWP, dan alamat usaha. Kamu bertanggung jawab atas kebenarannya. Keterlambatan dokumen menggeser jadwal pengerjaan."],
+["Biaya resmi dan pihak ketiga","Harga paket adalah jasa pengurusan. Biaya resmi pihak ketiga seperti PNBP, notaris, atau uji laboratorium hanya termasuk bila tertulis di rincian paket. Bila ada, biayanya diberi tahu dulu dan baru dibayar setelah kamu setuju."],
+["Estimasi waktu dan hasil","Estimasi waktu bergantung pada instansi seperti OSS, Dinkes, DJKI, atau BPOM. Keputusan menerima atau menolak permohonan ada pada instansi, sehingga penyedia tidak dapat menjamin permohonan pasti disetujui."],
+["Pembayaran bertahap (escrow)","Dana ditahan LegalIn dan dicairkan ke penyedia setelah tiap tahap selesai dan kamu setujui. Tahap dianggap disetujui bila tidak ada keberatan dalam 3 hari kerja sejak bukti tahap diunggah."],
+["Revisi dan penolakan instansi","Jika permohonan ditolak atau perlu perbaikan karena kesalahan penyedia, perbaikan dikerjakan tanpa biaya tambahan. Jika karena data atau dokumen darimu, perbaikan dapat dikenai biaya tambahan yang disepakati lebih dulu."],
+["Pembatalan dan pengembalian dana","Sebelum tahap pertama dimulai, dana dikembalikan penuh di luar biaya layanan. Setelah pengerjaan berjalan, dana tahap yang belum selesai dikembalikan. Dana tahap yang sudah kamu setujui tidak dikembalikan."],
+["Kerahasiaan dan data pribadi","Dokumenmu hanya dipakai untuk pengurusan layanan ini, disimpan dengan aman, dan diperlakukan sesuai UU Pelindungan Data Pribadi. Kamu dapat meminta penghapusan setelah layanan selesai, sepanjang tidak bertentangan dengan kewajiban hukum."],
+["Peran LegalIn dan penyedia","LegalIn adalah platform perantara dan penjaga dana. Layanan dikerjakan penyedia mitra yang mandiri, yang bertanggung jawab atas mutu pekerjaannya."],
+["Penyelesaian sengketa","Perselisihan diselesaikan dengan musyawarah dan mediasi lewat LegalIn lebih dulu. Jika belum selesai, berlaku hukum Republik Indonesia."]];
+var TC_K=[
+["Durasi dan jadwal","Sesi berlangsung sekitar 45 menit sesuai jadwal yang kamu pilih. Jadwal ulang gratis bila diajukan minimal 24 jam sebelum sesi."],
+["Pembatalan dan tidak hadir","Pembatalan lebih dari 24 jam sebelum sesi dikembalikan penuh di luar biaya layanan. Jika kamu tidak hadir, dana tidak dikembalikan. Jika konsultan yang tidak hadir, dana dikembalikan penuh."],
+["Sifat konsultasi","Konsultan memberi pandangan berdasarkan informasi yang kamu sampaikan. Hasil bisnis dan keputusan instansi tidak dapat dijamin."],
+["Kerahasiaan","Isi konsultasi bersifat rahasia. Sesi tidak boleh direkam tanpa persetujuan kedua pihak. Datamu diperlakukan sesuai UU Pelindungan Data Pribadi."],
+["Pembayaran","Dana ditahan LegalIn dan diteruskan ke konsultan setelah sesi berlangsung."],
+["Penyelesaian sengketa","Keluhan diselesaikan lewat mediasi LegalIn lebih dulu, lalu berlaku hukum Republik Indonesia."]];
+function tncView(it){var pk=it.kind=="paket",C=pk?TC_P:TC_K,
+ sm=pk?["Dana ditahan dan dicairkan bertahap setelah tiap tahap selesai dan kamu setujui.","Kamu bertanggung jawab atas kebenaran data dan dokumen yang diserahkan.","Keputusan akhir ada di instansi. Penyedia tidak bisa menjamin permohonan pasti disetujui."]:["Jadwal ulang gratis bila diajukan minimal 24 jam sebelumnya.","Jika kamu tidak hadir, dana tidak dikembalikan.","Isi konsultasi rahasia dan tidak menjamin hasil."],
+ h='<button class="back" data-bk="1">← Kembali</button><h1>Syarat dan ketentuan</h1><p class="mute" style="margin:4px 0 12px">Baca dulu sebelum membayar. Berlaku untuk: '+it.title+'</p><div class="card" style="background:var(--accbg);border-color:var(--acc)"><h3>Yang paling penting</h3>';
+ sm.forEach(function(t){h+='<p style="margin-top:6px">• '+t+'</p>'});h+='</div>';
+ C.forEach(function(c,i){h+='<details><summary>'+(i+1)+'. '+c[0]+'</summary><p>'+c[1]+'</p></details>'});
+ h+='<div style="height:8px"></div><div class="card chk" data-ag="1" tabindex="0" role="checkbox" aria-checked="false"><div class="box"></div><div>Saya sudah membaca dan menyetujui syarat dan ketentuan ini.</div></div><div class="card chk" data-ag="2" tabindex="0" role="checkbox" aria-checked="false"><div class="box"></div><div>'+(pk?"Saya menyatakan data dan dokumen yang akan saya serahkan benar dan sah.":"Saya memahami konsultasi tidak menjamin hasil usaha atau keputusan instansi.")+'</div></div><button class="btn" data-tnc="1">Setuju dan lanjut ke pembayaran</button><p class="note">Versi 1.0. Ini draf untuk prototype dan perlu ditinjau advokat sebelum dipakai publik.</p>';
+ return h}
+
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+var DT=[["ktp","KTP pemilik","ID"],["npwp","NPWP","NP"],["nib","NIB","NB"],["pirt","SPP-IRT","IR"],["halal","Sertifikat halal","HL"],["merek","Sertifikat merek","MK"],["kontrak","Kontrak","KT"],["lain","Dokumen lain","DL"]];
+function tod(){var d=new Date();d.setHours(0,0,0,0);return d}
+function iso(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function dd(n){var d=tod();d.setDate(d.getDate()+n);return iso(d)}
+function dif(x){return x?Math.round((new Date(x+"T00:00:00")-tod())/864e5):9999}
+function fd(x){return new Date(x+"T00:00:00").toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"})}
+function rel(n){return n<0?"Terlambat "+(-n)+" hari":n==0?"Hari ini":n+" hari lagi"}
+function rems(skip){var a=[];
+ S.docs.forEach(function(x){if(x.exp){var n=dif(x.exp);if(n<=S.lead)a.push({k:"doc",t:"Perpanjang "+x.name,d:x.exp,n:n})}});
+ if(!skip)S.rem.forEach(function(x){if(!x.done)a.push({k:"cus",id:x.id,t:x.t,d:x.d,n:dif(x.d)})});
+ var p=prog();if(p)p.l.filter(function(x){return !S.done[x.id]}).slice(0,2).forEach(function(x){a.push({k:"izin",t:"Urus "+x.n,d:"",n:9999})});
+ return a.sort(function(p,q){return p.n-q.n})}
+function remRow(x){var bad=x.n<0,btn=x.k=="doc"?'<button class="btn sec sm" data-dtab="b">Buka</button>':x.k=="izin"?'<button class="btn sec sm" data-go="cek">Buka</button>':'<button class="btn sec sm" data-rdone="'+x.id+'">Selesai</button>';
+ return '<div class="card row sp"><div class="row" style="min-width:0"><div class="ring" style="width:40px;height:40px;border-radius:12px;font-size:18px;background:'+(bad?"#FBE3E1":x.k=="izin"?"var(--okbg)":"var(--accbg)")+'">'+(x.k=="doc"?ico("M6 2h9l5 5v15H6z"):x.k=="izin"?ico("M5 13l4 4L19 7"):ico("M12 7v5l3 2"))+'</div><div style="min-width:0"><h3>'+esc(x.t)+'</h3><p class="mute">'+(x.d?'<span class="tag '+(bad?"bad":"")+'">'+rel(x.n)+'</span> '+fd(x.d):"Belum dikerjakan")+'</p></div></div>'+btn+'</div>'}
+function homeRem(){var l=rems().slice(0,3),h='<div class="row sp"><h2>Pengingat</h2><button class="back" data-dtab="p" style="margin-top:14px">Lihat semua</button></div>';
+ if(!l.length)return h+'<div class="card"><p class="mute">Belum ada pengingat. Simpan dokumenmu di Brankas supaya masa berlakunya kami ingatkan.</p><button class="btn sec sm" data-dtab="b" style="margin-top:8px">Buka Brankas</button></div>';
+ l.forEach(function(x){h+=remRow(x)});return h}
+function vault(){var h='<div class="card row" style="background:var(--okbg);border-color:var(--ok)">'+ico("M6 10V8a6 6 0 1112 0v2M5 10h14v11H5z")+'<p class="mute">Dokumen usahamu satu tempat. Di prototype ini data hanya tersimpan di perangkatmu. Versi asli memakai penyimpanan cloud terenkripsi.</p></div>';
+ if(adding){var ty=DF.type;h+='<div class="card"><h3>Tambah dokumen</h3><div class="chips" style="flex-wrap:wrap;margin-top:8px">';DT.forEach(function(t,i){h+='<button class="chip '+(i==ty?"on":"")+'" data-dt="'+i+'">'+t[2]+' '+t[1]+'</button>'});h+='</div>';
+  if(ty==7)h+='<label class="lb" for="fn">Nama dokumen</label><input id="fn" class="inp" data-f="name" value="'+esc(DF.name)+'" placeholder="Contoh: Surat izin tempat usaha">';
+  h+='<label class="lb" for="fe">Berlaku sampai (kosongkan jika tidak ada)</label><input id="fe" type="date" class="inp" data-f="exp" value="'+DF.exp+'"><label class="lb" for="ff">Berkas (opsional)</label><input id="ff" type="file" class="inp" data-f="file">'+(DF.file?'<p class="mute" style="margin-bottom:8px">Dipilih: '+esc(DF.file)+' (demo: hanya nama berkas yang disimpan)</p>':'')+'<div class="row"><button class="btn" data-savedoc="1">Simpan</button><button class="btn sec" data-cancel="1">Batal</button></div></div>'}
+ else h+='<button class="btn" data-addoc="1" style="margin-bottom:12px">+ Tambah dokumen</button>';
+ if(!S.docs.length&&!adding)return h+'<div class="card ctr"><h3>Brankas masih kosong</h3><p class="mute" style="margin:4px 0 10px">Simpan KTP, NPWP, NIB, izin, dan kontrak di sini.</p><button class="btn sec sm" data-demo="1">Muat contoh data (demo)</button></div>';
+ S.docs.forEach(function(x){var n=dif(x.exp),tg=!x.exp?'<span class="tag ok">Tanpa masa berlaku</span>':n<0?'<span class="tag bad">Kedaluwarsa</span>':n<=S.lead?'<span class="tag">Habis dalam '+n+' hari</span>':'<span class="tag ok">Berlaku sampai '+fd(x.exp)+'</span>';
+  h+='<div class="card"><div class="row"><div class="ring" style="width:44px;height:44px;border-radius:12px;font-size:20px;background:var(--accbg)">'+DT[x.type][2]+'</div><div style="min-width:0"><h3>'+esc(x.name)+'</h3><p class="mute">Ditambahkan '+fd(x.added)+(x.file?' · '+esc(x.file):'')+'</p></div></div><div class="row sp" style="margin-top:10px">'+tg+'<div class="row"><button class="btn sec sm" data-view="1">Lihat</button><button class="btn sec sm" data-del="'+x.id+'">'+(DEL===x.id?"Yakin hapus?":"Hapus")+'</button></div></div></div>'});
+ return h}
+function remind(){var h='<div class="card"><h3>Atur pengingat</h3><p class="mute" style="margin:2px 0 6px">Ingatkan sebelum masa berlaku habis</p><div class="chips">';
+ [30,14,7].forEach(function(n){h+='<button class="chip '+(S.lead==n?"on":"")+'" data-lead="'+n+'">'+n+' hari</button>'});h+='</div><p class="mute" style="margin-bottom:6px">Lewat mana</p><div class="chips">';
+ [["app","Aplikasi"],["wa","WhatsApp"],["em","Email"]].forEach(function(c){h+='<button class="chip '+(S.ch.indexOf(c[0])>=0?"on":"")+'" data-chn="'+c[0]+'">'+c[1]+'</button>'});
+ h+='</div><p class="mute">Pengiriman WhatsApp dan email aktif setelah aplikasi asli terhubung ke layanan notifikasi.</p></div><h2>Perlu perhatian</h2>';
+ var a=rems(true);if(!a.length)h+='<div class="card"><p class="mute">Tidak ada yang mendesak. Mantap!</p></div>';a.forEach(function(x){h+=remRow(x)});
+ h+=waCard();h+='<h2>Pengingat saya</h2><div class="card"><label class="lb" style="margin-top:0" for="rt">Apa yang perlu diingat?</label><input id="rt" class="inp" data-f="rt" value="'+esc(RM.t)+'" placeholder="Contoh: Lapor pajak bulanan"><label class="lb" for="rd">Tanggal</label><input id="rd" type="date" class="inp" data-f="rd" value="'+RM.d+'"><button class="btn" data-rsave="1">Simpan pengingat</button></div>';
+ S.rem.forEach(function(x){h+='<div class="card row sp"><div style="min-width:0"><h3 style="'+(x.done?"text-decoration:line-through;color:var(--mute)":"")+'">'+esc(x.t)+'</h3><p class="mute">'+(x.d?(x.done?fd(x.d):rel(dif(x.d))+" · "+fd(x.d)):"Tanpa tanggal")+'</p></div><div class="row"><button class="btn sec sm" data-rdone="'+x.id+'">'+(x.done?"Batal":"Selesai")+'</button><button class="btn sec sm" data-rdel="'+x.id+'" aria-label="Hapus pengingat">✕</button></div></div>'});
+ return h}
+function vDok(){return '<h1>Dokumen dan pengingat</h1><div class="seg"><button class="'+(dtab=="b"?"on":"")+'" data-dtab="b">Brankas</button><button class="'+(dtab=="p"?"on":"")+'" data-dtab="p">Pengingat</button></div>'+(dtab=="b"?vault():remind())}
+function inH(e){var f=e.target.dataset&&e.target.dataset.f;if(!f)return;var v=e.target.value;if(f=="file")v=e.target.files&&e.target.files[0]?e.target.files[0].name:"";if(f=="rt")RM.t=v;else if(f=="rd")RM.d=v;else DF[f]=v}
+document.addEventListener("input",inH);document.addEventListener("change",inH);
+
+function sst(x){return x.st=="batal"?"batal":((x.d&&dif(x.d)<0)||x.st=="selesai")?"selesai":"akan"}
+function upSes(){return S.sessions.filter(function(x){return sst(x)=="akan"}).sort(function(a,b){return (a.d||"9").localeCompare(b.d||"9")||String(a.slot).localeCompare(String(b.slot))})}
+function hrs(x){return x.d?(new Date(x.d+"T"+String(x.slot||"09.00").replace(".",":")+":00")-new Date())/36e5:999}
+function dl(x){var n=dif(x);return n==0?"Hari ini":n==1?"Besok":new Date(x+"T00:00:00").toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long"})}
+function dtile(x){return x?'<div class="dt">'+new Date(x+"T00:00:00").getDate()+'<small>'+new Date(x+"T00:00:00").toLocaleDateString("id-ID",{month:"short"})+'</small></div>':'<div class="dt">--</div>'}
+function homeSes(){var u=upSes().slice(0,2);if(!u.length)return "";var h='<div class="row sp"><h2>Jadwal konsultasi</h2><button class="back" data-go="jdw" style="margin-top:14px">Lihat semua</button></div>';
+ u.forEach(function(x){h+='<div class="card row" data-go="jdw" tabindex="0" style="cursor:pointer">'+dtile(x.d)+'<div><h3>'+esc(x.title)+'</h3><p class="mute">'+(x.d?dl(x.d)+' · '+x.slot+' · '+x.fmt:esc(x.sub||""))+'</p></div></div>'});return h}
+function sesCard(x){var ix=S.sessions.indexOf(x),n=dif(x.d);
+ var h='<div class="card"><div class="row">'+dtile(x.d)+'<div style="min-width:0"><h3>'+esc(x.title)+'</h3><p class="mute">'+esc(x.topic||x.sub||"")+'</p><p class="mute">'+(x.d?x.slot+" · "+x.fmt:"")+'</p></div></div><div class="row sp" style="margin:10px 0"><span class="tag '+(n<=1?"":"ok")+'">'+(x.d?(n==1?"Besok":rel(n)):"Terjadwal")+'</span><span class="mute">No. '+esc(x.trx||"-")+'</span></div><div class="row" style="flex-wrap:wrap"><button class="btn sm" data-room="'+ix+'">Masuk ruang sesi</button>'+(x.d?'<button class="btn sec sm" data-rs="'+ix+'">Jadwal ulang</button>':'')+'<button class="btn sec sm" data-cn="'+ix+'">Batalkan</button>'+(x.rm?'<span class="tag ok">Pengingat aktif</span>':x.d?'<button class="btn sec sm" data-rm="'+ix+'">Ingatkan saya</button>':'')+'</div>';
+ if(RS===ix){var D=[];for(var i=1;i<=7;i++)D.push(new Date(dd(i)+"T00:00:00").toLocaleDateString("id-ID",{weekday:"short",day:"numeric",month:"short"}));
+  h+='<div style="margin-top:12px;border-top:1px dashed var(--line);padding-top:10px"><h3 style="margin-bottom:6px">Pilih jadwal baru</h3>'+chips(D,"rdd",RD.d)+chips(["09.00","11.00","14.00","16.00"],"rds",RD.s)+'<p class="mute" style="margin-bottom:8px">Jadwal ulang gratis bila diajukan minimal 24 jam sebelum sesi.</p><div class="row"><button class="btn sm" data-rsok="'+ix+'">Simpan jadwal</button><button class="btn sec sm" data-rsno="1">Batal</button></div></div>'}
+ if(CN===ix){var ok=hrs(x)>=24;h+='<div class="card" style="background:var(--accbg);border-color:var(--acc);margin:12px 0 0"><h3>Batalkan sesi ini?</h3><p class="mute" style="margin:4px 0 8px">'+(ok?"Dana sesi "+rp(x.pr||0)+" dikembalikan. Biaya layanan tidak dikembalikan.":"Sesi kurang dari 24 jam lagi, jadi dana tidak dikembalikan.")+'</p><div class="row"><button class="btn sm" data-cnok="'+ix+'">Ya, batalkan</button><button class="btn sec sm" data-cnno="1">Tidak</button></div></div>'}
+ return h+'</div>'}
+function vJdw(){var h='<button class="back" data-go="konsul">← Konsultan</button><h1>Jadwal saya</h1><div class="seg"><button class="'+(jt=="a"?"on":"")+'" data-jt="a">Akan datang</button><button class="'+(jt=="r"?"on":"")+'" data-jt="r">Riwayat</button></div>';
+ if(jt=="r"){var r=S.sessions.filter(function(x){return sst(x)!="akan"});
+  if(!r.length)h+='<div class="card"><p class="mute">Belum ada riwayat sesi.</p></div>';
+  r.forEach(function(x){var b=sst(x)=="batal";h+='<div class="card"><div class="row">'+dtile(x.d)+'<div><h3>'+esc(x.title)+'</h3><p class="mute">'+esc(x.topic||"")+(x.d?" · "+x.slot:"")+'</p></div></div><div class="row sp" style="margin-top:10px"><span class="tag '+(b?"bad":"ok")+'">'+(b?"Dibatalkan":"Selesai")+'</span>'+(b?'<span class="mute">'+(x.rf?"Dana kembali "+rp(x.rf):"Tanpa pengembalian dana")+'</span>':'<button class="btn sec sm" data-go="konsul">Pesan lagi</button>')+'</div></div>'});
+  return h}
+ var A=[];upSes().forEach(function(x){A.push({d:x.d||"9999",k:"s",x:x})});
+ S.rem.forEach(function(x){if(!x.done&&x.d&&dif(x.d)>=0&&dif(x.d)<=30)A.push({d:x.d,k:"r",x:x})});
+ S.docs.forEach(function(x){if(x.exp&&dif(x.exp)>=0&&dif(x.exp)<=S.lead)A.push({d:x.exp,k:"d",x:x})});
+ A.sort(function(a,b){return a.d.localeCompare(b.d)});
+ if(!A.length)return h+'<div class="card ctr"><h3>Belum ada jadwal</h3><p class="mute" style="margin:4px 0 10px">Pesan sesi konsultasi dan jadwalnya muncul di sini.</p><button class="btn" data-go="konsul">Pilih konsultan</button>'+(S.sessions.length?"":'<button class="btn sec" data-jdemo="1" style="margin-top:8px">Muat contoh jadwal (demo)</button>')+'</div>';
+ var last="";A.forEach(function(a){if(a.d!=last){last=a.d;h+='<h2>'+(a.d=="9999"?"Tanggal belum tercatat":dl(a.d))+'</h2>'}
+  if(a.k=="s")h+=sesCard(a.x);
+  else h+='<div class="card row sp"><div class="row" style="min-width:0"><div class="ring" style="width:40px;height:40px;border-radius:12px;font-size:18px;background:var(--accbg)">'+(a.k=="d"?ico("M6 2h9l5 5v15H6z"):ico("M12 7v5l3 2"))+'</div><div style="min-width:0"><h3>'+esc(a.k=="d"?"Perpanjang "+a.x.name:a.x.t)+'</h3><p class="mute">'+(a.k=="d"?"Masa berlaku dokumen habis":"Pengingat")+'</p></div></div>'+(a.k=="d"?'<button class="btn sec sm" data-dtab="b">Buka</button>':'<button class="btn sec sm" data-rdone="'+a.x.id+'">Selesai</button>')+'</div>'});
+ return h}
+
+/* ===== FITUR TAMBAHAN ===== */
+var F={},AK=0,RI=0,RAT=0,VC=false,KN=0,KO="",TX={t:0,o:""},HJ=0;
+S.user=S.user||null;S.diag=S.diag||null;S.rv=S.rv||[];S.tk=S.tk||[];S.wa=S.wa||[];S.cons=S.cons||false;S.mc=S.mc||{};S.hl=S.hl||{};
+var NTM={diag:"home",modal:"home",kontrak:"home",pajak:"home",halal:"home",prof:"home",kons:"home",room:"konsul"};
+if(!S.user)tab="akun";
+function fv(k,d){return esc(F[k]===undefined?(d||""):F[k])}
+function fld(k,l,ph,t,d){return '<label class="lb">'+l+'</label><input class="inp" data-k="'+k+'" value="'+fv(k,d)+'" placeholder="'+(ph||"")+'"'+(t?' type="'+t+'"':'')+'>'}
+function num(k){return +String(F[k]||"").replace(/\D/g,"")||0}
+function bk(t,l){return '<button class="back" data-go="'+t+'">&larr; '+l+'</button>'}
+document.addEventListener("input",function(e){var k=e.target.dataset&&e.target.dataset.k;if(k)F[k]=e.target.value});
+document.addEventListener("change",function(e){var t=e.target,d=t.dataset||{},f=t.files&&t.files[0];if(!f)return;
+ if(d.up!==undefined){S.order.files=S.order.files||{};S.order.files[d.up]=f.name;save();render()}
+ else if(d.att!==undefined){var x=S.sessions[RI];x.msgs.push(["u","[Lampiran] "+f.name]);save();render()}
+ else if(d.pf!==undefined){var X0=PX[S.order.id],fl=S.order.files||{};if(!X0.doc.every(function(t,i){return fl[i]}))return toast("Pemilik belum melengkapi dokumen");S.order.pf=S.order.s+1;S.order.note="Konsultan mengunggah bukti tahap ini ("+f.name+"). Menunggu persetujuanmu.";save();render();toast("Bukti tahap diunggah")}});
+/* Akun */
+function vAkun(){var h='<div class="ctr" style="padding-top:30px"><h1>LegalIn UMKM</h1><p class="mute" style="margin:6px 0 18px">Legalitas, modal, dan konsultasi usaha dalam satu aplikasi.</p></div>';
+ if(!AK)return h+'<div class="card"><h3>Buat akun</h3>'+fld("nm","Nama usaha","Contoh: Dapur Ibu Sari")+fld("ph","Nomor WhatsApp atau email","08xxxxxxxxxx")+'<button class="btn" data-x="ak0">Kirim kode OTP</button><button class="btn sec" data-x="akg">Masuk dengan Google (demo)</button><p class="note">Dengan mendaftar kamu menyetujui syarat dan ketentuan layanan.</p></div>';
+ return h+'<div class="card"><h3>Verifikasi kode</h3><p class="mute">Kode dikirim ke '+fv("ph")+' (demo: 1234)</p>'+fld("otp","Kode OTP","1234")+'<button class="btn" data-x="ak1">Verifikasi dan masuk</button><button class="btn sec" data-x="ak2">Ganti nomor</button></div>'}
+function vProf(){var u=S.user;if(!u)return vAkun();var h=bk("home","Beranda")+'<h1>Profil usaha</h1><div class="card" style="margin-top:12px">'+fld("pb","Nama usaha","", "",u.biz)+fld("pc","Kota","", "",u.city)+'<p class="mute">Kontak: '+esc(u.phone)+'</p><button class="btn" data-x="psave" style="margin-top:10px">Simpan profil</button></div>';
+ h+='<div class="card"><div class="row sp"><div><h3>Mode konsultan (demo)</h3><p class="mute">Lihat aplikasi dari sisi mitra penyedia jasa.</p></div><button class="chip '+(S.cons?"on":"")+'" data-x="cons">'+(S.cons?"Aktif":"Mati")+'</button></div>'+(S.cons?'<button class="btn sec" data-go="kons" style="margin-top:10px">Buka dasbor konsultan</button>':'')+'</div><button class="btn sec" data-x="logout">Keluar</button>';return h}
+/* Diagnosis */
+var DQ=[["Pemasaran","Bagaimana pelanggan menemukan usahamu?",["Hanya dari kenalan","Medsos aktif tapi tidak rutin","Rutin di beberapa kanal dan terukur"]],["Pemasaran","Apakah kamu tahu siapa pelanggan utamamu?",["Belum jelas","Cukup tahu","Jelas dan terdata"]],["Keuangan","Bagaimana pencatatan keuanganmu?",["Tidak dicatat","Manual dan tidak rutin","Rutin dan terpisah dari uang pribadi"]],["Keuangan","Apakah harga jual dihitung dengan biaya penuh?",["Belum","Perkiraan saja","Sudah dihitung rinci"]],["Operasional","Apakah proses kerja punya SOP tertulis?",["Belum","Sebagian","Lengkap"]],["Operasional","Bagaimana kamu mengelola stok dan pemasok?",["Seadanya","Dicatat sederhana","Terjadwal dengan pemasok cadangan"]]];
+var DG={i:S.diag?DQ.length:0,a:[]};
+var PLAN={Pemasaran:["Tentukan satu pelanggan utama dan satu kanal andalan, lalu unggah konten rutin 3 kali seminggu.","bis"],Keuangan:["Pisahkan rekening usaha dan catat transaksi harian. Hitung ulang harga jual dengan biaya penuh.","bis"],Operasional:["Tulis SOP 5 langkah inti dan buat catatan stok dengan satu pemasok cadangan.","bis"],Legalitas:["Selesaikan izin wajib lewat Cek izin, mulai dari NIB.","cek"]};
+function vDiag(){if(DG.i>=DQ.length&&S.diag)return diagRes();var q=DQ[DG.i];var h=bk("home","Beranda")+'<div class="bar" style="margin:8px 0 18px"><i style="width:'+DG.i/DQ.length*100+'%"></i></div><p class="mute">'+q[0]+' &middot; '+(DG.i+1)+' dari '+DQ.length+'</p><h1 style="margin:4px 0 16px">'+q[1]+'</h1>';q[2].forEach(function(o,i){h+='<button class="opt" data-x="dga:'+i+'">'+o+'</button>'});return h}
+function diagRes(){var d=S.diag,w=Object.keys(d.areas).sort(function(a,b){return d.areas[a]-d.areas[b]})[0],pl=PLAN[w],lb=d.s>=75?"Sehat":d.s>=50?"Cukup sehat, perlu penguatan":"Perlu perhatian serius";
+ var h=bk("home","Beranda")+'<h1>Hasil diagnosis</h1><div class="card ctr" style="margin-top:12px"><div class="ring" style="margin:0 auto 10px;background:conic-gradient(var(--ok) '+d.s+'%,var(--line) 0)"><b>'+d.s+'</b></div><h3>'+lb+'</h3><p class="mute">Skor kesehatan bisnis dari 100</p></div><div class="card"><h3 style="margin-bottom:8px">Skor per area</h3>';
+ Object.keys(d.areas).forEach(function(k){h+='<div class="row sp"><span>'+k+'</span><b>'+d.areas[k]+'</b></div><div class="bar" style="margin:4px 0 10px"><i style="width:'+d.areas[k]+'%"></i></div>'});
+ h+='</div><div class="card" style="background:var(--okbg)"><h3>Celah terbesar: '+w+'</h3><p style="margin-top:6px">'+pl[0]+'</p></div>';
+ h+=pl[1]=="cek"?'<button class="btn" data-go="cek">Buka cek izin</button><button class="btn sec" data-go="paket">Lihat paket urus izin</button>':'<button class="btn" data-x="kb">Konsultasi dengan konsultan bisnis</button><button class="btn sec" data-go="modal">Cek kesiapan modal</button>';
+ return h+'<button class="btn sec" data-x="dgr">Ulangi diagnosis</button><p class="note">Skor Legalitas diambil dari hasil Cek izin. Diagnosis ini bersifat indikatif.</p>'}
+/* Modal */
+function vModal(){var m=S.mc,hv=function(k){return !!S.done[k]||S.docs.some(function(d){return d.name.toLowerCase().indexOf(k)>=0})};
+ var C=[["nib","NIB sudah terbit",hv("nib"),1],["npwp","NPWP sudah ada",hv("npwp"),1],["age","Usaha berjalan minimal 6 bulan",m.age],["rek","Punya rekening khusus usaha",m.rek],["cat","Punya catatan keuangan sederhana",m.cat],["slik","Tidak ada tunggakan kredit macet",m.slik]];
+ var ok=C.filter(function(c){return c[2]}).length,pct=Math.round(ok/C.length*100);
+ var h=bk("home","Beranda")+'<h1>Modal usaha</h1><p class="mute" style="margin:4px 0 12px">Cek kesiapan mengajukan pembiayaan dan hitung kebutuhan modal.</p><div class="card row"><div class="ring" style="background:conic-gradient(var(--ok) '+pct+'%,var(--line) 0)"><b>'+pct+'%</b></div><div><h3>Kesiapan pembiayaan</h3><p class="mute">'+ok+' dari '+C.length+' syarat terpenuhi</p></div></div>';
+ C.forEach(function(c){h+='<div class="card chk '+(c[2]?"done":"")+'" '+(c[3]?'':'data-x="mc:'+c[0]+'" tabindex="0" ')+'><div class="box">'+(c[2]?"&#10003;":"")+'</div><div><h3>'+c[1]+'</h3><p class="mute">'+(c[3]?"Otomatis dari Cek izin dan Brankas":"Ketuk untuk menandai")+'</p></div></div>'});
+ var tot=num("m1")+3*(num("m2")+num("m3")+num("m4")+num("m5"));
+ h+='<h2>Simulasi kebutuhan modal</h2><div class="card">'+fld("m1","Peralatan dan renovasi (sekali)","0","tel")+fld("m2","Sewa per bulan","0","tel")+fld("m3","Bahan baku per bulan","0","tel")+fld("m4","Gaji per bulan","0","tel")+fld("m5","Biaya lain per bulan","0","tel")+'<button class="btn" data-x="msim">Hitung</button>';
+ if(F.hit){var pr=tot<=20e6?"Pembiayaan ultra mikro":tot<=100e6?"KUR Mikro":tot<=500e6?"KUR Kecil":"Pembiayaan komersial atau investor";
+  h+='<div class="rc"><span>Peralatan</span><b>'+rp(num("m1"))+'</b></div><div class="rc"><span>Operasional 3 bulan pertama</span><b>'+rp(3*(num("m2")+num("m3")+num("m4")+num("m5")))+'</b></div><div class="rc"><span>Total modal awal</span><b class="price">'+rp(tot)+'</b></div><div class="card" style="background:var(--okbg);margin:10px 0 0"><h3>Jalur yang mungkin: '+pr+'</h3><p class="mute" style="margin-top:4px">'+(pct<100?"Lengkapi dulu syarat yang belum terpenuhi di atas.":"Syarat dasarmu sudah lengkap. Konsultasikan pengajuannya.")+'</p></div>'}
+ return h+'</div><button class="btn" data-x="kb">Konsultasi pembiayaan</button><p class="note">Batas plafon dan syarat program berubah. Pastikan ke bank penyalur atau situs resmi KUR sebelum mengajukan.</p>'}
+/* Ruang sesi */
+var RPL=["Terima kasih, saya catat. Boleh jelaskan sudah sejauh mana prosesnya?","Itu langkah yang tepat. Apa kendala terbesarnya saat ini?","Baik. Siapkan dokumen pendukungnya, nanti kita tinjau bersama."];
+function vRoom(){var x=S.sessions[RI];if(!x)return bk("jdw","Jadwal")+'<div class="card"><p>Sesi tidak ditemukan.</p></div>';
+ x.msgs=x.msgs||[["k","Halo, saya "+(x.who||"konsultan")+". Topik kita: "+(x.topic||"konsultasi")+". Silakan ceritakan kondisi usahamu."]];
+ var fin=x.st=="selesai"||x.st=="batal",h=bk("jdw","Jadwal")+'<h1>'+esc(x.title)+'</h1><p class="mute" style="margin:4px 0 10px">'+esc(x.topic||"")+' &middot; '+esc(x.fmt||"Chat")+'</p>';
+ if(!fin)h+='<div class="row" style="flex-wrap:wrap;margin-bottom:10px"><button class="btn sm '+(VC?"":"sec")+'" data-x="vc">'+(VC?"Akhiri video call":"Mulai video call")+'</button><label class="btn sec sm" style="margin:0">Lampirkan berkas<input type="file" hidden data-att="1"></label><button class="btn sec sm" data-x="end">Akhiri sesi</button></div>'+(VC?'<div class="card ctr" style="background:var(--okbg)"><h3>Video call berlangsung</h3><p class="mute">Simulasi: kamera dan mikrofon tidak benar-benar aktif.</p></div>':'');
+ x.msgs.forEach(function(m){h+='<div class="mg '+(m[0]=="u"?"u":"")+'">'+esc(m[1])+'</div>'});
+ if(!fin)h+='<div class="row" style="margin-top:12px"><input class="inp" style="margin:0" data-k="msg" value="'+fv("msg")+'" placeholder="Tulis pesan"><button class="btn sm" data-x="send">Kirim</button></div>';
+ if(x.note)h+='<div class="card" style="background:var(--okbg);margin-top:14px"><h3>Notulensi sesi</h3><p class="mute" style="margin-top:4px">'+esc(x.note)+'</p><p class="mute">Tersimpan di Brankas dokumen.</p></div>';
+ if(x.st=="selesai"){if(x.rated)h+='<div class="card"><h3>Ulasanmu terkirim</h3><p class="mute">Rating '+x.rated+' dari 5</p></div>';else{h+='<div class="card"><h3>Beri ulasan</h3><div class="chips">';[1,2,3,4,5].forEach(function(n){h+='<button class="chip '+(RAT==n?"on":"")+'" data-x="rt:'+n+'">'+n+'</button>'});h+='</div>'+fld("rvc","Komentar singkat","")+'<button class="btn" data-x="rvs">Kirim ulasan</button></div>'}
+  h+='<div class="card"><h3>Ada masalah dengan sesi ini?</h3>'+fld("tkt","Ceritakan keluhanmu","")+'<button class="btn sec" data-x="tks">Ajukan komplain</button></div>'}
+ return h}
+/* Pesanan: unggah berkas dan catatan petugas */
+function ordOK(){var o=S.order,X=PX[o.id],f=o.files||{};return X.doc.every(function(t,i){return f[i]})&&o.pf>o.s}
+function ordExtra(fin){var o=S.order,X=PX[o.id],f=o.files=o.files||{},h='';
+ if(!fin){h+='<h3 style="margin:8px 0">Dokumen yang perlu diunggah</h3>';X.doc.forEach(function(t,i){h+='<div class="row sp" style="padding:6px 0"><div><b style="font-size:13px">'+t+'</b><p class="mute">'+(f[i]?esc(f[i]):"Belum diunggah")+'</p></div><label class="btn sec sm" style="margin:0">'+(f[i]?"Ganti":"Unggah")+'<input type="file" hidden data-up="'+i+'"></label></div>'})}
+ var all=X.doc.every(function(t,i){return f[i]});
+ h+='<div class="card" style="background:var(--okbg);margin:10px 0"><p class="mute"><b>Catatan petugas:</b> '+esc(o.note||(all?"Berkas lengkap. Menunggu konsultan memverifikasi dan mengunggah bukti tahap.":"Menunggu kamu melengkapi dokumen."))+'</p></div>';
+ if(!fin&&all&&!(o.pf>o.s))h+='<button class="btn sec sm" data-x="mkon">Buka mode konsultan (demo)</button>';return h}
+/* Dasbor konsultan */
+function vKons(){var h=bk("prof","Profil")+'<h1>Mode konsultan</h1><p class="mute" style="margin:4px 0 12px">Sisi mitra: pesanan, jadwal, ulasan, dan komplain.</p><h2>Pesanan masuk</h2>',o=S.order;
+ if(!o)h+='<div class="card"><p class="mute">Belum ada pesanan. Beli paket dari sisi pengguna untuk mencobanya.</p></div>';
+ else{var pk=PK.filter(function(x){return x.id==o.id})[0],X=PX[o.id],f=o.files||{},nf=X.doc.filter(function(t,i){return f[i]}).length,fin=o.s>=pk.m.length;
+  h+='<div class="card"><div class="row sp"><h3>'+pk.n+'</h3><span class="tag '+(fin?"ok":"")+'">'+(fin?"Selesai":"Tahap "+(o.s+1)+" dari "+pk.m.length)+'</span></div><p class="mute">Dokumen dari pemilik: '+nf+' dari '+X.doc.length+'</p><p class="mute">Dana cair: '+rp(Math.round(pk.p*Math.min(o.s,pk.m.length)/pk.m.length))+'</p>';
+  if(!fin)h+='<p style="margin:8px 0">Tahap sekarang: <b>'+pk.m[o.s]+'</b></p>'+(o.pf>o.s?'<span class="tag ok">Bukti sudah diunggah, menunggu persetujuan pemilik</span>':'<label class="btn sm" style="margin:0">Unggah bukti tahap<input type="file" hidden data-pf="1"></label>');
+  h+='</div>'}
+ h+='<h2>Jadwal sesi</h2>';var u=upSes();if(!u.length)h+='<div class="card"><p class="mute">Belum ada sesi terjadwal.</p></div>';u.forEach(function(x){h+='<div class="card"><h3>'+esc(x.title)+'</h3><p class="mute">'+esc(x.topic||"")+(x.d?" &middot; "+fd(x.d)+" "+x.slot:"")+'</p></div>'});
+ h+='<h2>Ulasan masuk</h2>';if(!S.rv.length)h+='<div class="card"><p class="mute">Belum ada ulasan.</p></div>';S.rv.forEach(function(r){h+='<div class="card"><h3>Rating '+r.r+' dari 5</h3><p class="mute">'+esc(r.c||"Tanpa komentar")+'</p></div>'});
+ h+='<h2>Komplain</h2>';if(!S.tk.length)h+='<div class="card"><p class="mute">Tidak ada komplain.</p></div>';S.tk.forEach(function(t,i){h+='<div class="card row sp"><div><h3>'+esc(t.t)+'</h3><span class="tag '+(t.s=="Selesai"?"ok":"bad")+'">'+t.s+'</span></div>'+(t.s=="Selesai"?'':'<button class="btn sec sm" data-x="tkr:'+i+'">Selesaikan</button>')+'</div>'});return h}
+/* Pengingat WhatsApp */
+function waCard(){var h='<h2>Simulasi pengingat WhatsApp</h2><div class="card"><p class="mute">Pesan dikirim ke '+esc(S.user?S.user.phone:"nomor kamu")+'. Di versi asli lewat WhatsApp Business API.</p>';
+ S.wa.slice(-4).forEach(function(m){h+='<div class="mg '+(m.u?"u":"")+'">'+esc(m.m)+'</div>'});
+ return h+'<div class="row" style="flex-wrap:wrap;margin-top:8px"><button class="btn sm" data-x="wa">Kirim pengingat uji</button>'+(S.wa.length?'<button class="btn sec sm" data-x="wy">Balas YA</button>':'')+'</div></div>'}
+/* Kontrak, pajak, halal */
+var KT=[["Perjanjian Reseller",["Nama pihak pertama","Nama reseller","Target penjualan per bulan (Rp)","Wilayah dan kewajiban"]],["Kontrak Kerja Karyawan",["Nama pemberi kerja","Nama karyawan","Gaji pokok (Rp)","Tugas dan jam kerja"]],["Perjanjian Supplier",["Nama pembeli","Nama supplier","Nilai pesanan (Rp)","Syarat kirim dan bayar"]]];
+function vKontrak(){var h=bk("home","Beranda")+'<h1>Draf kontrak</h1><div class="chips" style="margin-top:10px">';KT.forEach(function(k,i){h+='<button class="chip '+(KN==i?"on":"")+'" data-x="kn:'+i+'">'+k[0]+'</button>'});h+='</div><div class="card">';KT[KN][1].forEach(function(l,i){h+=fld("kc"+i,l,"")});h+='<button class="btn" data-x="kgen">Buat draf</button></div>';
+ if(KO)h+='<div class="card"><pre style="white-space:pre-wrap;font:inherit;font-size:13px;margin:0">'+esc(KO)+'</pre></div><button class="btn sec" data-x="ksv">Simpan ke Brankas</button>';return h+'<p class="note">Draf ini template umum. Minta konsultan hukum meninjau sebelum ditandatangani.</p>'}
+function vPajak(){var om=num("om"),t=TX.t,tax=t==0?Math.max(0,om-500e6)*.005:om*.005;
+ var h=bk("home","Beranda")+'<h1>Kalkulator pajak UMKM</h1><p class="mute" style="margin:4px 0 12px">Perkiraan PPh final 0,5 persen dari omzet bruto.</p><div class="chips"><button class="chip '+(t==0?"on":"")+'" data-x="tx:0">Orang pribadi</button><button class="chip '+(t==1?"on":"")+'" data-x="tx:1">Badan usaha</button></div><div class="card">'+fld("om","Omzet setahun (Rp)","0","tel")+'<button class="btn" data-x="txh">Hitung</button>';
+ if(TX.o)h+='<div class="rc"><span>Omzet setahun</span><b>'+rp(om)+'</b></div><div class="rc"><span>Perkiraan pajak setahun</span><b class="price">'+rp(Math.round(tax))+'</b></div><div class="rc"><span>Rata-rata per bulan</span><b>'+rp(Math.round(tax/12))+'</b></div><p class="mute" style="margin-top:8px">'+(t==0?"Omzet sampai Rp500 juta setahun tidak dikenai PPh final untuk orang pribadi.":"Badan usaha dikenai tarif dari omzet bruto sejak rupiah pertama.")+'</p>';
+ return h+'</div><div class="card"><h3>Jadwal rutin</h3><p class="mute">Setor paling lambat tanggal 15 bulan berikutnya, lapor SPT Masa paling lambat tanggal 20.</p></div><p class="note">Perkiraan untuk omzet sampai Rp4,8 miliar setahun. Aturan dapat berubah, konfirmasi ke DJP atau konsultan pajak.</p>'}
+var HS=[["Self declare (mikro dan kecil, bahan jelas halal)",["Siapkan NIB","Buat akun di SIHALAL","Isi data produk dan bahan","Verifikasi oleh pendamping proses produk halal","Penetapan kehalalan oleh komite fatwa","Sertifikat halal terbit"]],["Jalur reguler (bahan atau proses berisiko)",["Siapkan NIB dan dokumen usaha","Ajukan lewat SIHALAL dan pilih lembaga pemeriksa halal","Audit oleh lembaga pemeriksa halal","Sidang fatwa","Sertifikat halal terbit"]]];
+function vHalal(){var j=HS[HJ],h=bk("home","Beranda")+'<h1>Alur sertifikasi halal</h1><div class="chips" style="margin-top:10px">';HS.forEach(function(s,i){h+='<button class="chip '+(HJ==i?"on":"")+'" data-x="hj:'+i+'">'+(i?"Reguler":"Self declare")+'</button>'});h+='</div><p class="mute" style="margin-bottom:10px">'+j[0]+'</p>';
+ var d=j[1].filter(function(s,i){return S.hl[HJ+"_"+i]}).length;h+='<div class="bar" style="margin-bottom:12px"><i style="width:'+d/j[1].length*100+'%"></i></div>';
+ j[1].forEach(function(s,i){var k=HJ+"_"+i,on=S.hl[k];h+='<div class="card chk '+(on?"done":"")+'" data-x="hl:'+k+'" tabindex="0"><div class="box">'+(on?"&#10003;":"")+'</div><h3>'+s+'</h3></div>'});
+ return h+'<button class="btn" data-go="paket">Butuh pendampingan? Lihat paket</button><p class="note">Alur umum. Syarat tiap produk berbeda, cek ketentuan terbaru ke BPJPH.</p>'}
+/* Beranda: alat usaha */
+function homeTools(){var d=S.diag,h='<h2>Alat usaha</h2><div class="card row sp" data-go="diag" tabindex="0" style="cursor:pointer"><div><h3>Diagnosis kesehatan bisnis</h3><p class="mute">'+(d?"Skor terakhir "+d.s+" dari 100. Ketuk untuk melihat.":"6 pertanyaan singkat, dapat skor dan rencana tindakan.")+'</p></div><span class="tag '+(d?"ok":"")+'">'+(d?d.s:"Mulai")+'</span></div><div class="grid">';
+ [["modal","Modal usaha","M12 2v20M17 6H9.5a3 3 0 000 6h5a3 3 0 010 6H6"],["kontrak","Draf kontrak","M6 2h9l5 5v15H6z"],["pajak","Pajak","M4 20L20 4M7 7h.01M17 17h.01"],["halal","Alur halal","M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z"],["prof","Profil","M12 12a4 4 0 100-8 4 4 0 000 8zM4 21c1-5 5-7 8-7s7 2 8 7"],[S.cons?"kons":"jdw",S.cons?"Konsultan":"Jadwal","M4 6h16v14H4zM4 10h16"]].forEach(function(t){h+='<button class="qa" data-go="'+t[0]+'"><span>'+ico(t[2])+'</span>'+t[1]+'</button>'});return h+'</div>'}
+/* Aksi */
+var X={
+ak0:function(){if(!(F.nm||"").trim())return toast("Isi nama usaha");if((F.ph||"").trim().length<5)return toast("Isi nomor WhatsApp atau email");AK=1;render();toast("Kode OTP dikirim (demo: 1234)")},
+ak1:function(){if(F.otp!=="1234")return toast("Kode salah. Demo: 1234");S.user={biz:F.nm.trim(),phone:F.ph.trim(),city:"Solo"};save();F={};tab="home";render()},
+ak2:function(){AK=0;render()},
+akg:function(){S.user={biz:(F.nm||"").trim()||"Usaha Saya",phone:"Akun Google",city:"Solo"};save();F={};tab="home";render()},
+psave:function(){S.user.biz=(F.pb===undefined?S.user.biz:F.pb).trim()||S.user.biz;S.user.city=(F.pc===undefined?S.user.city:F.pc).trim();save();toast("Profil disimpan")},
+cons:function(){S.cons=!S.cons;save();render()},
+logout:function(){S.user=null;AK=0;F={};save();tab="akun";render()},
+mkon:function(){S.cons=true;save();go("kons")},
+dga:function(v){DG.a.push(+v);DG.i++;if(DG.i>=DQ.length){var a=DG.a,p=prog();S.diag={areas:{Pemasaran:(a[0]+a[1])*25,Keuangan:(a[2]+a[3])*25,Operasional:(a[4]+a[5])*25,Legalitas:p?p.pct:0}};var v2=S.diag.areas;S.diag.s=Math.round((v2.Pemasaran+v2.Keuangan+v2.Operasional+v2.Legalitas)/4);save()}render()},
+dgr:function(){DG={i:0,a:[]};render()},
+kb:function(){ktype="b";go("konsul")},
+mc:function(k){S.mc[k]=!S.mc[k];save();render()},
+msim:function(){F.hit=1;render()},
+vc:function(){VC=!VC;render()},
+send:function(){var v=(F.msg||"").trim();if(!v)return;var x=S.sessions[RI];x.msgs.push(["u",v]);F.msg="";save();render();setTimeout(function(){x.msgs.push(["k",RPL[x.msgs.length%3]]);save();if(tab=="room")render()},900)},
+end:function(){var x=S.sessions[RI],n=x.msgs.filter(function(m){return m[0]=="u"}).length;x.st="selesai";x.note="Topik: "+(x.topic||"konsultasi")+". Kamu mengirim "+n+" pesan. Tindak lanjut: siapkan dokumen pendukung dan jadwalkan sesi lanjutan bila perlu.";S.docs.unshift({id:Date.now(),type:7,name:"Notulensi: "+x.title,exp:"",file:"notulensi.pdf",added:iso(tod())});VC=false;save();render();toast("Sesi selesai. Notulensi disimpan")},
+rt:function(v){RAT=+v;render()},
+rvs:function(){if(!RAT)return toast("Pilih rating dulu");var x=S.sessions[RI];x.rated=RAT;S.rv.unshift({r:RAT,c:F.rvc||""});RAT=0;F.rvc="";save();render();toast("Ulasan terkirim")},
+tks:function(){if(!(F.tkt||"").trim())return toast("Tulis keluhanmu dulu");S.tk.unshift({t:S.sessions[RI].title+": "+F.tkt.trim(),s:"Dibuka"});F.tkt="";save();render();toast("Komplain diajukan")},
+tkr:function(i){S.tk[+i].s="Selesai";save();render()},
+wa:function(){var r=rems()[0],t=r?r.t+(r.d?" ("+rel(r.n)+")":""):"Cek kelengkapan izin usahamu";S.wa.push({m:"LegalIn: Halo "+(S.user?S.user.biz:"pelaku UMKM")+", pengingat: "+t+". Balas YA bila sudah dikerjakan."});save();render()},
+wy:function(){S.wa.push({u:1,m:"YA"});S.wa.push({m:"Terima kasih, pengingat ditandai selesai."});save();render()},
+kn:function(v){KN=+v;KO="";render()},
+kgen:function(){var T=[0,1,2,3].map(function(i){return (F["kc"+i]||"").trim()});if(T.some(function(x){return !x}))return toast("Lengkapi semua isian");KO=KT[KN][0].toUpperCase()+"\n\nPihak 1: "+T[0]+"\nPihak 2: "+T[1]+"\nNilai: "+T[2]+"\n\nHak dan kewajiban:\n"+T[3]+"\n\nPerjanjian berlaku sejak ditandatangani dan dapat diakhiri dengan pemberitahuan tertulis 30 hari.";render()},
+ksv:function(){S.docs.unshift({id:Date.now(),type:6,name:KT[KN][0]+" - "+(F.kc1||""),exp:"",file:"draf-kontrak.pdf",added:iso(tod())});save();toast("Draf tersimpan di Brankas")},
+tx:function(v){TX.t=+v;TX.o="";render()},
+txh:function(){TX.o=1;render()},
+hj:function(v){HJ=+v;render()},
+hl:function(k){S.hl[k]=!S.hl[k];save();render()}};
+document.addEventListener("click",function(e){var el=e.target.closest("[data-x]");if(!el)return;var a=el.dataset.x.split(":"),f=X[a[0]];if(f){var y=window.scrollY;f(a[1]);if(["mc","hl","rt","dga"].indexOf(a[0])<0)return;window.scrollTo(0,a[0]=="dga"?0:y)}});
+
+function render(){
+ var v={home:vHome,cek:vCek,paket:vPaket,konsul:vKonsul,book:vBook,pay:vPay,reads:vReads,art:vArt,pk:vPk,dok:vDok,jdw:vJdw,akun:vAkun,prof:vProf,diag:vDiag,modal:vModal,room:vRoom,kons:vKons,kontrak:vKontrak,pajak:vPajak,halal:vHalal}[tab]();
+ $("#app").innerHTML=v;
+ var nt=(tab=="reads"||tab=="art")?"home":tab=="pk"?"paket":tab=="jdw"?"konsul":tab=="book"?"konsul":tab=="pay"?(P.item.kind=="paket"?"paket":"konsul"):tab;
+ nt=NTM[tab]||nt;var T=[["home",ico("M3 11l9-8 9 8v10H3z"),"Beranda"],["cek",ico("M5 13l4 4L19 7"),"Cek izin"],["paket",ico("M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10"),"Paket"],["konsul",ico("M4 5h16v11H9l-5 4z"),"Konsultan"],["dok",ico("M3 6h7l2 2h9v12H3z"),"Dokumen"]],n="";
+ T.forEach(function(t){n+='<button class="'+(t[0]==nt?"on":"")+'" data-go="'+t[0]+'"><span>'+t[1]+'</span>'+t[2]+'</button>'});
+ $("#nav").innerHTML=n;$("nav").style.display=tab=="akun"?"none":"";window.scrollTo(0,0)}
+
+function go(t){tab=t;render()}
+document.addEventListener("click",function(e){
+ var el=e.target.closest("[data-go],[data-a],[data-back],[data-t],[data-redo],[data-buy],[data-next],[data-reset],[data-city],[data-kt],[data-book],[data-topic],[data-day],[data-slot],[data-fmt],[data-cobook],[data-meth],[data-pay],[data-sim],[data-copy],[data-bk],[data-read],[data-rf],[data-pk],[data-ag],[data-tnc],[data-dt],[data-addoc],[data-savedoc],[data-del],[data-dtab],[data-lead],[data-chn],[data-rsave],[data-rdone],[data-rdel],[data-demo],[data-cancel],[data-view],[data-jt],[data-jdemo],[data-room],[data-rs],[data-rdd],[data-rds],[data-rsok],[data-rsno],[data-cn],[data-cnok],[data-cnno],[data-rm]");
+ if(!el)return;var d=el.dataset;
+ if(d.go!==undefined){go(d.go)}
+ else if(d.a){var q=Q[wz.i];wz.a[q.k]=d.a;wz.i++;if(wz.i>=Q.length){S.biz=wz.a;S.done={};save();toast("Hasil cek siap")}render()}
+ else if(d.back){wz.i--;render()}
+ else if(d.t){var y=window.scrollY;S.done[d.t]=!S.done[d.t];save();render();window.scrollTo(0,y)}
+ else if(d.redo){S.biz=null;wz={i:0,a:{}};save();render()}
+ else if(d.buy){var x=PK.filter(function(p){return p.id==d.buy})[0];startPay({kind:"paket",id:x.id,title:x.n,sub:x.t,price:x.p})}
+ else if(d.next){if(!ordOK()){toast("Lengkapi dokumen dan tunggu bukti tahap dari konsultan");return}S.order.note="";S.order.s++;save();render();toast("Tahap disetujui. Dana tahap ini dicairkan.")}
+ else if(d.reset){S.order=null;save();render()}
+ else if(d.city){city=d.city;render()}
+ else if(d.kt){ktype=d.kt;render()}
+ else if(d.book){BK={i:+d.book,topic:0,day:0,slot:0,fmt:0};tab="book";render()}
+ else if(d.topic!==undefined||d.day!==undefined||d.slot!==undefined||d.fmt!==undefined){var y2=window.scrollY;["topic","day","slot","fmt"].forEach(function(k){if(d[k]!==undefined)BK[k]=+d[k]});render();window.scrollTo(0,y2)}
+ else if(d.cobook){var k=KS[BK.i],D=days(),SL=["09.00","11.00","14.00","16.00"],FM=["Chat","Video call"];startPay({kind:"konsul",title:"Sesi dengan "+k.n,sub:TP[k.k][BK.topic]+" · "+D[BK.day]+", "+SL[BK.slot]+" · "+FM[BK.fmt],price:k.t,ses:{i:BK.i,who:k.n,d:dd(BK.day+1),slot:SL[BK.slot],fmt:FM[BK.fmt],topic:TP[k.k][BK.topic]}})}
+ else if(d.meth){P.m=d.meth;var y3=window.scrollY;render();window.scrollTo(0,y3)}
+ else if(d.pay){if(!P.m){toast("Pilih metode bayar dulu");return}P.step="wait";render()}
+ else if(d.sim){P.step="proc";render();setTimeout(function(){P.step="ok";P.trx="LGI-"+String(Date.now()).slice(-8);P.time=new Date().toLocaleString("id-ID");
+   if(P.item.kind=="paket")S.order={id:P.item.id,s:0};else S.sessions.unshift(Object.assign({title:P.item.title,sub:P.item.sub,trx:P.trx,st:"akan",pr:P.item.price},P.item.ses||{}));
+   S.docs.unshift({id:Date.now(),type:7,name:"Bukti bayar: "+P.item.title,exp:"",file:P.trx+".pdf",added:iso(tod())});
+   save();render()},1600)}
+ else if(d.copy){try{navigator.clipboard.writeText("39010812345678890")}catch(er){}toast("Nomor VA disalin")}
+ else if(d.read){AID=+d.read;tab="art";render()}
+ else if(d.rf){rf=d.rf;render()}
+ else if(d.dtab){dtab=d.dtab;adding=false;tab="dok";render()}
+ else if(d.addoc){adding=true;DF={type:0,name:"",exp:"",file:""};render()}
+ else if(d.cancel){adding=false;render()}
+ else if(d.dt!==undefined){DF.type=+d.dt;render()}
+ else if(d.savedoc){var nm=DF.type==7?DF.name.trim():DT[DF.type][1];if(!nm){toast("Isi nama dokumen dulu");return}S.docs.unshift({id:Date.now(),type:DF.type,name:nm,exp:DF.exp,file:DF.file,added:iso(tod())});adding=false;save();render();toast("Dokumen disimpan di Brankas")}
+ else if(d.del){var id=+d.del;if(DEL===id){S.docs=S.docs.filter(function(x){return x.id!==id});DEL=null;save();toast("Dokumen dihapus")}else DEL=id;render()}
+ else if(d.view!==undefined){toast("Pratinjau berkas (demo)")}
+ else if(d.lead){S.lead=+d.lead;save();render()}
+ else if(d.chn){var ix=S.ch.indexOf(d.chn);if(ix>=0)S.ch.splice(ix,1);else S.ch.push(d.chn);save();render()}
+ else if(d.rsave){var tt=RM.t.trim();if(!tt){toast("Tulis pengingatnya dulu");return}S.rem.push({id:Date.now(),t:tt,d:RM.d,done:false});RM={t:"",d:""};save();render();toast("Pengingat disimpan")}
+ else if(d.rdone){var rid=+d.rdone;S.rem.forEach(function(x){if(x.id===rid)x.done=!x.done});save();render()}
+ else if(d.rdel){var rd=+d.rdel;S.rem=S.rem.filter(function(x){return x.id!==rd});save();render()}
+ else if(d.demo){S.docs=[{id:1,type:0,name:"KTP pemilik",exp:"",file:"ktp.jpg",added:dd(-30)},{id:2,type:1,name:"NPWP",exp:"",file:"npwp.pdf",added:dd(-30)},{id:3,type:2,name:"NIB",exp:"",file:"nib.pdf",added:dd(-20)},{id:4,type:3,name:"SPP-IRT",exp:dd(20),file:"spp-irt.pdf",added:dd(-10)},{id:5,type:4,name:"Sertifikat halal",exp:dd(600),file:"halal.pdf",added:dd(-8)},{id:6,type:6,name:"Kontrak sewa kios",exp:dd(-5),file:"sewa.pdf",added:dd(-40)}];S.rem=[{id:7,t:"Lapor pajak bulanan",d:dd(6),done:false},{id:8,t:"Perpanjang domain toko online",d:dd(45),done:false}];save();render();toast("Contoh data dimuat")}
+ else if(d.jt){jt=d.jt;render()}
+ else if(d.jdemo!==undefined){S.sessions=[{title:"Sesi dengan Rina Wulandari, S.H.",who:"Rina Wulandari, S.H.",topic:"NIB dan izin usaha",d:dd(1),slot:"09.00",fmt:"Chat",st:"akan",pr:150000,trx:"LGI-DEMO001",i:0},{title:"Sesi dengan Fajar Nugroho, M.M.",who:"Fajar Nugroho, M.M.",topic:"Ekspansi dan kemitraan",d:dd(4),slot:"14.00",fmt:"Video call",st:"akan",pr:180000,trx:"LGI-DEMO002",i:5},{title:"Sesi dengan Maya Lestari, M.M.",who:"Maya Lestari, M.M.",topic:"Pemasaran dan penjualan",d:dd(-4),slot:"11.00",fmt:"Chat",st:"akan",pr:140000,trx:"LGI-DEMO003",i:6}];save();render();toast("Contoh jadwal dimuat")}
+ else if(d.room!==undefined){RI=+d.room;tab="room";render()}
+ else if(d.rs!==undefined){RS=+d.rs;CN=null;RD={d:0,s:0};render()}
+ else if(d.rdd!==undefined||d.rds!==undefined){if(d.rdd!==undefined)RD.d=+d.rdd;if(d.rds!==undefined)RD.s=+d.rds;var y5=window.scrollY;render();window.scrollTo(0,y5)}
+ else if(d.rsno){RS=null;render()}
+ else if(d.rsok!==undefined){var sx=S.sessions[+d.rsok];if(hrs(sx)<24){toast("Jadwal ulang gratis maksimal 24 jam sebelum sesi");return}S.rem=S.rem.filter(function(r){return !(r.t=="Sesi dengan "+sx.who&&r.d==sx.d)});sx.d=dd(RD.d+1);sx.slot=["09.00","11.00","14.00","16.00"][RD.s];sx.rm=0;RS=null;save();render();toast("Jadwal diperbarui")}
+ else if(d.cn!==undefined){CN=+d.cn;RS=null;render()}
+ else if(d.cnno){CN=null;render()}
+ else if(d.cnok!==undefined){var cx=S.sessions[+d.cnok];cx.rf=hrs(cx)>=24?(cx.pr||0):0;cx.st="batal";CN=null;save();render();toast(cx.rf?"Sesi dibatalkan. Dana dikembalikan.":"Sesi dibatalkan.")}
+ else if(d.rm!==undefined){var rx=S.sessions[+d.rm];S.rem.push({id:Date.now(),t:"Sesi dengan "+(rx.who||"konsultan"),d:rx.d,done:false});rx.rm=1;save();render();toast("Pengingat dibuat")}
+ else if(d.pk){PID=d.pk;tab="pk";render()}
+ else if(d.ag){var on=!P["ag"+d.ag];P["ag"+d.ag]=on;el.classList.toggle("done",on);el.querySelector(".box").textContent=on?"✓":"";el.setAttribute("aria-checked",on)}
+ else if(d.tnc){if(!(P.ag1&&P.ag2)){toast("Centang kedua pernyataan dulu");return}P.step="co";render()}
+ else if(d.bk){if(P.step=="co"){P.step="tnc";render()}else if(P.item.kind=="paket"){PID=P.item.id;tab="pk";render()}else go("book")}
+});
+document.addEventListener("keydown",function(e){if((e.key=="Enter"||e.key==" ")&&e.target.dataset&&(e.target.dataset.t||e.target.dataset.read||e.target.dataset.pk||e.target.dataset.ag)){e.preventDefault();e.target.click()}});
+render();
+</script>
+</body>
+</html>

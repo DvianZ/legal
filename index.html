@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="LegalIn UMKM - Platform Perizinan OSS, Sertifikasi Halal, Pendaftaran Merek DJKI, dan Konsultasi Bisnis Terpercaya.">
+  <title>LegalIn UMKM - Platform Legalitas & Konsultasi Bisnis</title>
+  
+  <!-- Font Google Nunito -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet Claymorphism & UI -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Kontainer Utama Aplikasi (Mobile Shell Frame) -->
+  <div id="app">
+    <main id="app-content">
+      <!-- Konten dirender secara dinamis oleh js/app.js -->
+    </main>
+  </div>
+
+  <!-- Bar Navigasi Bawah -->
+  <nav aria-label="Navigasi Menu Utama">
+    <div id="nav-bar"></div>
+  </nav>
+
+  <!-- Floating Action Button (FAB) Tanya AI -->
+  <button id="ai-fab" aria-label="Buka Asisten AI Legal & Bisnis">
+    <span>🤖</span>
+    <span>Tanya AI</span>
+  </button>
+
+  <!-- Modal / Drawer Chatbot AI Legal & Bisnis -->
+  <div id="ai-modal" role="dialog" aria-modal="true" aria-labelledby="ai-modal-title">
+    <div class="ai-dialog">
+      <!-- Header Modal AI -->
+      <div class="ai-header">
+        <div class="row">
+          <div style="background: var(--okbg); color: var(--ok); width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; font-size: 18px">🤖</div>
+          <div>
+            <h3 id="ai-modal-title" style="font-size: 14.5px">Asisten AI Legal & Bisnis</h3>
+            <p class="mute" style="font-size: 11px">Konsultasi Gratis Regulasi UMKM</p>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn sm sec" data-action="escalate-ai" title="Alihkan percakapan ke Konsultan Ahli Manusia" style="padding: 6px 10px; font-size: 11.5px">
+            Eskalasi Ahli
+          </button>
+          <button id="close-ai-modal" class="btn sm sec" aria-label="Tutup Asisten AI" style="width: 32px; height: 32px; border-radius: 50%; padding: 0">
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- Ruang Pesan Chat AI -->
+      <div id="ai-chat-body" class="ai-body"></div>
+
+      <!-- Quick Action Prompt Chips -->
+      <div id="ai-quick-chips" class="ai-chips"></div>
+
+      <!-- Input Bar Chat AI -->
+      <div class="ai-footer">
+        <input id="ai-user-inp" class="inp" type="text" placeholder="Tanya NIB, Halal, Merek, HPP, atau Pajak..." style="margin: 0" autocomplete="off">
+        <button id="ai-send-btn" class="btn sm" style="padding: 12px 18px; border-radius: 16px">Kirim</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Global -->
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Script Modul JavaScript -->
+  <script src="js/data.js"></script>
+  <script src="js/ai-bot.js"></script>
+  <script src="js/consultant.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -83,7 +83,7 @@ Ada yang ingin kamu tanyakan hari ini?`;
 4. **Izin Lanjutan di ${ctx.bizName}:**
    Izin yang belum selesai di daftar Anda: *${ctx.pendingLicenses}*.
 
-💡 *Tips LegalIn:* Jika Anda bingung menentukan kode KBLI yang tepat, gunakan fitur **Pencari Kode KBLI** di menu alat usaha kami.`;
+💡 *Tips LegalIn:* Jika Anda bingung menentukan kode KBLI yang tepat, jadwalkan sesi temu dengan konsultan kami melalui menu **Temu Konsultan**.`;
     }
 
     // 2. Halal BPJPH

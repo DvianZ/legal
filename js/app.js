@@ -1,7 +1,7 @@
 /**
  * app.js - Logika Utama, Router, State Management, & Renderer LegalIn UMKM
- * Versi Clean Professional dengan Foto Profil Konsultan, Booking Jadwal Temu Menyeluruh,
- * Sistem Pembayaran Escrow Interaktif, dan Dukungan Penuh Dark Mode Kontras Tinggi.
+ * Fitur: Cek Izin, Temu Konsultan, Riwayat & Jadwal Booking Lengkap,
+ * Pembayaran Escrow (QRIS, VA, E-Wallet), Draf Kontrak, dan Brankas Izin.
  */
 
 // State Aplikasi Global
@@ -10,8 +10,6 @@ let currentTab = "home";
 let activeBooking = null; // Data sementara booking konsultan
 let activePackageId = "dasar";
 let activeConsultationIndex = 0;
-let kbliSearchTerm = "";
-let kbliCategory = "Semua";
 let selectedContractIndex = 0;
 let contractFormData = {};
 let generatedContractText = "";
@@ -19,6 +17,12 @@ let activeNoteSession = null;
 let vaultSubTab = "b"; // 'b' = Brankas, 'p' = Pengingat
 let isAddingDoc = false;
 let newDocForm = { type: 0, name: "", exp: "", file: "" };
+
+// State Jadwal & Riwayat Booking
+let scheduleSubTab = "akan"; // 'akan' | 'riwayat'
+let rescheduleSessionIndex = null;
+let rescheduleSlot = "09.00";
+let rescheduleDayIdx = 0;
 
 // State Sistem Pembayaran
 let paymentState = {
@@ -165,6 +169,7 @@ function formatRp(n) {
 function formatDate(isoStr) {
   if (!isoStr) return "-";
   return new Date(isoStr + "T00:00:00").toLocaleDateString("id-ID", {
+    weekday: "short",
     day: "numeric",
     month: "short",
     year: "numeric"
@@ -333,9 +338,9 @@ function viewHome() {
         <span>${renderIcon("M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z")}</span>
         Temu Konsultan
       </button>
-      <button class="qa" data-go="kbli">
-        <span>${renderIcon("M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z")}</span>
-        Pencari KBLI
+      <button class="qa" data-go="jdw">
+        <span>${renderIcon("M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z")}</span>
+        Jadwal Temu
       </button>
       <button class="qa" data-go="paket">
         <span>${renderIcon("M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z")}</span>
@@ -813,13 +818,16 @@ function viewPayment() {
       </div>
 
       <div class="row" style="margin-top: 14px">
-        <button class="btn" data-action="go-to-booked-room">
-          Masuk ke Ruang Sesi Temu →
+        <button class="btn" data-go="jdw">
+          Lihat Jadwal Temu Saya →
         </button>
-        <button class="btn sec" onclick="window.print()">
-          Cetak Invoice
+        <button class="btn sec" data-action="go-to-booked-room">
+          Buka Ruang Sesi
         </button>
       </div>
+      <button class="btn sec" onclick="window.print()" style="margin-top: 8px">
+        Cetak Invoice
+      </button>
     `;
   }
 
@@ -827,56 +835,165 @@ function viewPayment() {
 }
 
 /* ==========================================================================
-   VIEW 6: PENCARI KBLI OSS
+   VIEW 6: RIWAYAT & JADWAL TEMU KONSULTAN (PENGGANTI KBLI)
    ========================================================================== */
-function viewKbliFinder() {
-  const categories = ["Semua", "Kuliner", "Kosmetik", "Fashion", "Jasa", "Online", "Distributor"];
-  
-  let list = KBLI_DATABASE;
-  if (kbliCategory !== "Semua") {
-    list = list.filter(k => k.cat === kbliCategory);
-  }
-  if (kbliSearchTerm.trim()) {
-    const t = kbliSearchTerm.toLowerCase();
-    list = list.filter(k => k.code.includes(t) || k.name.toLowerCase().includes(t) || k.desc.toLowerCase().includes(t));
-  }
+function viewJadwal() {
+  const sessions = S.sessions || [];
+  const upcomingList = sessions.filter(s => s.st === "akan");
+  const historyList = sessions.filter(s => s.st !== "akan");
 
   let h = `
-    <button class="back" data-go="home">← Beranda</button>
-    <h1>Pencari Kode KBLI 2020 (OSS)</h1>
-    <p class="mute" style="margin: 4px 0 12px">Pilih kode KBLI 5 digit yang tepat agar izin usahamu di OSS RBA tidak salah.</p>
+    <h1>Riwayat &amp; Jadwal Temu Konsultan</h1>
+    <p class="mute" style="margin: 4px 0 14px">Pantau sesi temu aktif, jadwal ulang, atau akses notulensi resmi hasil konsultasimu.</p>
 
-    <label class="lb" for="kbli-inp" style="margin-top: 0">Cari nama usaha atau kode:</label>
-    <input id="kbli-inp" class="inp" type="text" placeholder="Contoh: 56101, warung kopi, keripik, salon..." value="${esc(kbliSearchTerm)}" data-action="search-kbli">
-
-    <div class="chips">
+    <!-- Tab Filter: Akan Datang vs Riwayat -->
+    <div class="seg">
+      <button class="${scheduleSubTab === "akan" ? "on" : ""}" data-schedule-tab="akan">
+        Akan Datang (${upcomingList.length})
+      </button>
+      <button class="${scheduleSubTab === "riwayat" ? "on" : ""}" data-schedule-tab="riwayat">
+        Riwayat Selesai (${historyList.length})
+      </button>
+    </div>
   `;
 
-  categories.forEach(c => {
-    h += `<button class="chip ${c === kbliCategory ? "on" : ""}" data-kbli-cat="${c}">${c}</button>`;
-  });
-
-  h += `</div><p class="mute" style="margin: 6px 0 12px">Ditemukan <b>${list.length}</b> kode KBLI:</p>`;
+  const list = scheduleSubTab === "akan" ? upcomingList : historyList;
 
   if (!list.length) {
-    h += `<div class="card"><p class="mute">Tidak ditemukan kode KBLI yang cocok. Coba kata kunci lain atau pilih kategori 'Semua'.</p></div>`;
+    if (scheduleSubTab === "akan") {
+      h += `
+        <div class="card" style="text-align: center; padding: 32px 18px">
+          <div style="font-size: 38px; margin-bottom: 8px">📅</div>
+          <h3 style="font-size: 16px">Belum Ada Jadwal Temu Aktif</h3>
+          <p class="mute" style="max-width: 320px; margin: 6px auto 18px">
+            Punya kendala izin usaha, sengketa merek, draf kontrak, atau perhitungan pajak? Jadwalkan konsultasi dengan praktisi ahli sekarang.
+          </p>
+          <button class="btn" data-go="konsul" style="width: auto; padding: 12px 24px">
+            + Cari Konsultan &amp; Jadwalkan Temu
+          </button>
+        </div>
+      `;
+    } else {
+      h += `
+        <div class="card" style="text-align: center; padding: 28px 18px">
+          <p class="mute">Belum ada riwayat sesi yang selesai. Sesi yang telah tuntas akan otomatis tersimpan di sini beserta notulensi resminya.</p>
+        </div>
+      `;
+    }
+    return h;
   }
 
-  list.forEach(k => {
-    const isLow = k.risk.includes("Rendah");
+  // Render kartu setiap sesi
+  list.forEach(s => {
+    const origIdx = sessions.indexOf(s);
+    const isUpcoming = s.st === "akan";
+    const isCompleted = s.st === "selesai";
+    const isCancelled = s.st === "batal";
+    const diff = daysDiff(s.d);
+
+    let statusTag = `<span class="tag ok">Akan Datang</span>`;
+    if (isCompleted) statusTag = `<span class="tag ok">Selesai ✓</span>`;
+    else if (isCancelled) statusTag = `<span class="tag bad">Dibatalkan</span>`;
+    else if (diff === 0) statusTag = `<span class="tag warn">Hari Ini!</span>`;
+    else if (diff === 1) statusTag = `<span class="tag warn">Besok</span>`;
+    else if (diff > 1) statusTag = `<span class="tag ok">${diff} Hari Lagi</span>`;
+
     h += `
       <div class="card">
-        <div class="row sp">
-          <div>
-            <span class="price" style="font-size: 19px">${k.code}</span>
-            <span class="tag ${isLow ? "ok" : ""}" style="margin-left: 6px">Risiko ${k.risk}</span>
+        <div class="row sp" style="align-items: flex-start; gap: 12px">
+          <div class="avatar-wrap">
+            <img class="avatar-img" src="${s.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&h=200&q=80"}" alt="${esc(s.who)}">
+            <span class="avatar-badge">✓</span>
           </div>
-          <button class="btn sm sec" data-copy-kbli="${k.code}">Salin Kode</button>
+          <div style="min-width: 0; flex: 1">
+            <div class="row sp">
+              <h3 style="font-size: 15px">${esc(s.title)}</h3>
+              ${statusTag}
+            </div>
+            <p class="mute" style="font-size: 12px; margin: 2px 0 4px"><b>${esc(s.topic || "Konsultasi")}</b></p>
+            <p class="mute" style="font-size: 11.5px">
+              📅 ${formatDate(s.d)} · Slot <b>${esc(s.slot || "09.00")} WIB</b> · Format: <b>${esc(s.fmt || "Chat")}</b>
+            </p>
+          </div>
         </div>
-        <h3 style="margin-top: 6px">${esc(k.name)}</h3>
-        <p class="mute" style="margin: 4px 0 8px">${esc(k.desc)}</p>
-        <div class="card" style="background: var(--card-alt); margin: 0; padding: 10px 12px">
-          <p style="font-size: 12px; margin: 0"><b>Izin wajib yang diterbitkan:</b> ${esc(k.req)}</p>
+
+        <!-- Info Transaksi & Escrow Proteksi -->
+        <div class="card" style="background: var(--card-alt); margin: 10px 0 12px; padding: 10px 12px; border-radius: var(--radius-md)">
+          <div class="row sp" style="font-size: 12px">
+            <span class="mute">No. Tagihan: <b>${esc(s.trx || "LGI-INV001")}</b></span>
+            <span style="color: var(--ok); font-weight: 700">🛡️ ESCROW PROTECTED</span>
+          </div>
+          <div class="row sp" style="font-size: 12px; margin-top: 4px">
+            <span class="mute">Tarif Terbayar:</span>
+            <b class="price" style="font-size: 14px">${formatRp(s.pr || 150000)}</b>
+          </div>
+        </div>
+    `;
+
+    // Panel Dialog Jadwal Ulang Inline
+    if (rescheduleSessionIndex === origIdx) {
+      const daysList = [];
+      for (let i = 1; i <= 6; i++) {
+        const d = new Date();
+        d.setDate(d.getDate() + i);
+        daysList.push({
+          dateStr: d.toISOString().split("T")[0],
+          dayName: d.toLocaleDateString("id-ID", { weekday: "short" }),
+          dateNum: d.getDate()
+        });
+      }
+      const slots = ["09.00", "10.30", "13.30", "15.00", "16.30", "19.00"];
+
+      h += `
+        <div class="card" style="border-color: var(--pri); background: var(--pri-light); padding: 12px; margin: 10px 0">
+          <h4 style="font-size: 13.5px; margin-bottom: 8px">Pilih Waktu Jadwal Ulang:</h4>
+          <div class="chips">
+            ${daysList.map((d, di) => `
+              <button class="chip ${rescheduleDayIdx === di ? "on" : ""}" data-resched-day="${di}" style="padding: 6px 12px; font-size: 12px">
+                ${d.dayName} ${d.dateNum}
+              </button>
+            `).join("")}
+          </div>
+          <div class="grid" style="grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 8px 0">
+            ${slots.map(sl => `
+              <button class="chip ${rescheduleSlot === sl ? "on" : ""}" data-resched-slot="${sl}" style="padding: 6px 10px; font-size: 12px; border-radius: var(--radius-sm)">
+                ${sl} WIB
+              </button>
+            `).join("")}
+          </div>
+          <div class="row" style="margin-top: 10px">
+            <button class="btn sm" data-confirm-resched="${origIdx}">Simpan Perubahan</button>
+            <button class="btn sm sec" data-cancel-resched="1">Batal</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // Tombol Aksi
+    h += `
+        <div class="row" style="flex-wrap: wrap; gap: 8px">
+          ${isUpcoming ? `
+            <button class="btn sm" data-room="${origIdx}">
+              💬 Masuk Ruang Sesi
+            </button>
+            <button class="btn sm sec" data-start-resched="${origIdx}">
+              Jadwal Ulang
+            </button>
+            <button class="btn sm sec" data-cancel-session="${origIdx}" style="color: var(--bad)">
+              Batalkan
+            </button>
+          ` : isCompleted ? `
+            <button class="btn sm" data-view-note-idx="${origIdx}">
+              📄 Buka Notulensi Resmi
+            </button>
+            <button class="btn sm sec" data-rebook-consultant="${s.i || 0}">
+              Pesan Sesi Lanjutan
+            </button>
+          ` : `
+            <button class="btn sm sec" data-rebook-consultant="${s.i || 0}">
+              Pesan Ulang
+            </button>
+          `}
         </div>
       </div>
     `;
@@ -1250,7 +1367,7 @@ function renderApp() {
   const viewMap = {
     home: viewHome,
     cek: viewCekIzin,
-    kbli: viewKbliFinder,
+    jdw: viewJadwal,
     kontrak: viewKontrak,
     konsul: viewKonsultan,
     book: viewBooking,
@@ -1259,41 +1376,6 @@ function renderApp() {
     dok: viewDokumen,
     prof: viewProfil,
     notes: viewNotes,
-    jdw: () => {
-      let h = `
-        <button class="back" data-go="home">← Beranda</button>
-        <h1>Jadwal Temu Saya</h1>
-        <p class="mute" style="margin: 4px 0 12px">Daftar agenda temu konsultan aktif dan riwayat notulensi Anda.</p>
-      `;
-      if (!S.sessions || !S.sessions.length) {
-        h += `<div class="card"><p class="mute">Belum ada jadwal temu aktif. Silakan pilih ahli di menu Temu Konsultan.</p></div>`;
-      } else {
-        S.sessions.forEach((s, idx) => {
-          const isDone = s.st === "selesai";
-          h += `
-            <div class="card">
-              <div class="row sp">
-                <div class="row" style="gap: 12px">
-                  <img class="avatar-img" src="${s.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&h=200&q=80"}" alt="${esc(s.who)}">
-                  <div>
-                    <h3>${esc(s.title)}</h3>
-                    <p class="mute">${formatDate(s.d)} · Slot ${esc(s.slot || "09.00")} WIB · <b>${esc(s.fmt || "Chat")}</b></p>
-                  </div>
-                </div>
-                <span class="tag ${isDone ? "ok" : "warn"}">${isDone ? "Selesai" : "Akan Datang"}</span>
-              </div>
-              <div class="row sp" style="margin-top: 12px; padding-top: 8px; border-top: 1px dashed var(--line)">
-                <span class="price">${formatRp(s.pr)}</span>
-                <button class="btn sm" data-room="${idx}">
-                  ${isDone ? "Lihat Notulensi" : "Buka Ruang Sesi"}
-                </button>
-              </div>
-            </div>
-          `;
-        });
-      }
-      return h;
-    },
     paket: () => {
       let h = `
         <button class="back" data-go="home">← Beranda</button>
@@ -1347,11 +1429,11 @@ function renderApp() {
 
   $("#app-content").innerHTML = content;
 
-  // Navigasi Bar Bawah
+  // Navigasi Bar Bawah Modern: Beranda, Cek Izin, Jadwal Temu, Konsultan, Brankas
   const navItems = [
     { id: "home", label: "Beranda", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
     { id: "cek", label: "Cek Izin", icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" },
-    { id: "kbli", label: "KBLI", icon: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" },
+    { id: "jdw", label: "Jadwal Temu", icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
     { id: "konsul", label: "Konsultan", icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" },
     { id: "dok", label: "Brankas", icon: "M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" }
   ];
@@ -1513,20 +1595,108 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // 3. Buka Modal AI
+    // 3. Tab Jadwal (Akan Datang vs Riwayat)
+    const schedTabEl = e.target.closest("[data-schedule-tab]");
+    if (schedTabEl) {
+      scheduleSubTab = schedTabEl.dataset.scheduleTab;
+      renderApp();
+      return;
+    }
+
+    // Jadwal Ulang
+    const startReschedEl = e.target.closest("[data-start-resched]");
+    if (startReschedEl) {
+      rescheduleSessionIndex = Number(startReschedEl.dataset.startResched);
+      rescheduleDayIdx = 0;
+      rescheduleSlot = "09.00";
+      renderApp();
+      return;
+    }
+    if (e.target.closest("[data-cancel-resched]")) {
+      rescheduleSessionIndex = null;
+      renderApp();
+      return;
+    }
+    const reschedDayEl = e.target.closest("[data-resched-day]");
+    if (reschedDayEl) {
+      rescheduleDayIdx = Number(reschedDayEl.dataset.reschedDay);
+      renderApp();
+      return;
+    }
+    const reschedSlotEl = e.target.closest("[data-resched-slot]");
+    if (reschedSlotEl) {
+      rescheduleSlot = reschedSlotEl.dataset.reschedSlot;
+      renderApp();
+      return;
+    }
+    const confirmReschedEl = e.target.closest("[data-confirm-resched]");
+    if (confirmReschedEl) {
+      const idx = Number(confirmReschedEl.dataset.confirmResched);
+      const ses = S.sessions[idx];
+      if (ses) {
+        const targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + rescheduleDayIdx + 1);
+        ses.d = targetDate.toISOString().split("T")[0];
+        ses.slot = rescheduleSlot;
+        rescheduleSessionIndex = null;
+        saveState();
+        renderApp();
+        showToast("Jadwal temu berhasil diperbarui!");
+      }
+      return;
+    }
+
+    // Batalkan Sesi
+    const cancelSesEl = e.target.closest("[data-cancel-session]");
+    if (cancelSesEl) {
+      const idx = Number(cancelSesEl.dataset.cancelSession);
+      const ses = S.sessions[idx];
+      if (ses) {
+        ses.st = "batal";
+        saveState();
+        renderApp();
+        showToast("Sesi dibatalkan. Dana dikembalikan via escrow.");
+      }
+      return;
+    }
+
+    // Buka Notulensi dari Riwayat
+    const viewNoteIdxEl = e.target.closest("[data-view-note-idx]");
+    if (viewNoteIdxEl) {
+      activeNoteSession = S.sessions[Number(viewNoteIdxEl.dataset.viewNoteIdx)];
+      navigateTo("notes");
+      return;
+    }
+
+    // Pesan Sesi Lanjutan / Re-book
+    const rebookEl = e.target.closest("[data-rebook-consultant]");
+    if (rebookEl) {
+      activeBooking = {
+        i: Number(rebookEl.dataset.rebookConsultant),
+        fmtIdx: 0,
+        topicIdx: 0,
+        dayIdx: 0,
+        slotIdx: 0,
+        notes: ""
+      };
+      navigateTo("book");
+      return;
+    }
+
+    // 4. Buka Modal AI
     if (e.target.closest("[data-action='open-ai']")) {
       openAiModal();
       return;
     }
 
-    // 4. AI Quick Prompt Chip
+    // 5. AI Quick Prompt Chip
     const chipEl = e.target.closest("[data-ai-prompt]");
     if (chipEl) {
       handleAiSend(chipEl.dataset.aiPrompt);
       return;
     }
 
-    // 5. Eskalasi AI ke Konsultan Manusia
+    // 6. Eskalasi AI ke Konsultan Manusia
     if (e.target.closest("[data-action='escalate-ai']")) {
       const lastUserMsg = window.LegalInAI.history.filter(m => m.sender === "user").slice(-1)[0]?.text || "Perlindungan Merek & Legalitas";
       closeAiModal();
@@ -1538,7 +1708,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // 6. Cek Izin: Jawab Wizard
+    // 7. Cek Izin: Jawab Wizard
     const ansEl = e.target.closest("[data-wz-ans]");
     if (ansEl) {
       const q = LEGAL_QUESTIONS[wizardStep];
@@ -1573,20 +1743,6 @@ document.addEventListener("DOMContentLoaded", () => {
       wizardAnswers = {};
       saveState();
       renderApp();
-      return;
-    }
-
-    // 7. Pencari KBLI
-    const kbliCatEl = e.target.closest("[data-kbli-cat]");
-    if (kbliCatEl) {
-      kbliCategory = kbliCatEl.dataset.kbliCat;
-      renderApp();
-      return;
-    }
-    const copyKbliEl = e.target.closest("[data-copy-kbli]");
-    if (copyKbliEl) {
-      navigator.clipboard?.writeText(copyKbliEl.dataset.copyKbli);
-      showToast("Kode KBLI " + copyKbliEl.dataset.copyKbli + " disalin!");
       return;
     }
 
@@ -1792,7 +1948,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       saveState();
       renderApp();
-      showToast("Pembayaran berhasil & bukti bayar tersimpan!");
+      showToast("Pembayaran berhasil & jadwal temu tercatat!");
       window.scrollTo(0, 0);
       return;
     }
@@ -1975,15 +2131,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Event Input Global
   document.addEventListener("input", (e) => {
-    if (e.target.dataset.action === "search-kbli") {
-      kbliSearchTerm = e.target.value;
-      renderApp();
-      const inp = $("#kbli-inp");
-      if (inp) {
-        inp.focus();
-        inp.selectionStart = inp.selectionEnd = inp.value.length;
-      }
-    } else if (e.target.dataset.contractField) {
+    if (e.target.dataset.contractField) {
       contractFormData[e.target.dataset.contractField] = e.target.value;
     } else if (e.target.dataset.action === "doc-name-inp") {
       newDocForm.name = e.target.value;
